@@ -1,0 +1,5 @@
+interface:
+  display_name: "原型验证"
+  short_description: "用临时原型回答一个设计问题"
+policy:
+  allow_implicit_invocation: false

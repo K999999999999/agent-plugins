@@ -1,0 +1,5 @@
+interface:
+  display_name: "资料研究"
+  short_description: "查阅一手资料并记录本地证据"
+policy:
+  allow_implicit_invocation: false

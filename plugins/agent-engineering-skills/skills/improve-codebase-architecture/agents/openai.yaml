@@ -1,0 +1,5 @@
+interface:
+  display_name: "改善代码库架构"
+  short_description: "发现 Deep Module 架构改进候选"
+policy:
+  allow_implicit_invocation: false

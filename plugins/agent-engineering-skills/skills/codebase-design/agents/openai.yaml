@@ -1,0 +1,5 @@
+interface:
+  display_name: "代码库设计"
+  short_description: "用深模块词汇设计 Interface 和 Seam"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,29 @@
+{
+  "name": "agent-engineering-skills",
+  "version": "0.1.0",
+  "description": "Reusable engineering workflow Skills for Codex.",
+  "author": {
+    "name": "K999999999999"
+  },
+  "repository": "https://github.com/K999999999999/agent-plugins",
+  "keywords": [
+    "codex",
+    "engineering-workflow",
+    "software-design",
+    "debugging"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Agent Engineering Skills",
+    "shortDescription": "Reusable engineering workflow Skills for Codex.",
+    "longDescription": "A personal collection of explicit Codex Skills for software design, debugging, research, project planning, and safe engineering workflows.",
+    "developerName": "K999999999999",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "Help me diagnose this engineering problem.",
+      "Help me design a maintainable module.",
+      "Help me plan a large engineering task."
+    ]
+  }
+}

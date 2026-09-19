@@ -1,0 +1,5 @@
+interface:
+  display_name: "可维护性重构"
+  short_description: "先诊断根因，再以最小范围和测试保护改善长期可维护性"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "诊断 Bug"
+  short_description: "复现、定位并验证 Bug 和性能回归"
+policy:
+  allow_implicit_invocation: false

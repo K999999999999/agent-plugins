@@ -1,0 +1,5 @@
+interface:
+  display_name: "解决合并冲突"
+  short_description: "安全处理 Merge / Rebase 冲突并验证结果"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "配置本地工程 Skills"
+  short_description: "为仓库配置本地 Markdown 任务、Spec、Ticket 和领域文档规则"
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,5 @@
+interface:
+  display_name: "领域建模"
+  short_description: "校准领域术语、上下文和不可逆决策"
+policy:
+  allow_implicit_invocation: false
