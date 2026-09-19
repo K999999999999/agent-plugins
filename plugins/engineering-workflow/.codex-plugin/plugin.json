@@ -1,0 +1,24 @@
+{
+  "name": "engineering-workflow",
+  "version": "0.1.0+codex.20260918204832",
+  "description": "\u901a\u7528\u5de5\u7a0b\u5de5\u4f5c\u6d41\uff1a\u4ece ask-matt \u8def\u7531\u9700\u6c42\u6f84\u6e05\u3001Spec\u3001\u8bbe\u8ba1\u5ba1\u67e5\u3001Ticket\u3001TDD \u5b9e\u73b0\u5230 PR \u4ea4\u4ed8\u548c\u5408\u5e76\u540e\u6e05\u7406\u3002",
+  "author": {
+    "name": "Local Workflow Maintainer"
+  },
+  "license": "Proprietary",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Engineering Workflow",
+    "shortDescription": "\u4ece\u9700\u6c42\u6f84\u6e05\u5230\u5b9e\u73b0\u3001Review \u548c PR \u4ea4\u4ed8",
+    "longDescription": "\u901a\u7528\u5de5\u7a0b\u5de5\u4f5c\u6d41\u63d2\u4ef6\uff1a\u8bfb\u53d6\u76ee\u6807\u4ed3\u5e93\u89c4\u5219\uff0c\u4ece\u9700\u6c42\u6f84\u6e05\u3001Spec\u3001\u8bbe\u8ba1\u5ba1\u67e5\u3001Ticket\u3001TDD \u5b9e\u73b0\u548c Clean Code Review \u4e00\u76f4\u5230 PR\u3001Auto-merge \u76d1\u63a7\u4e0e\u5408\u5e76\u540e\u6e05\u7406\u3002",
+    "developerName": "Local Workflow Maintainer",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "$ask-matt \u8bc4\u4f30\u5f53\u524d\u5de5\u7a0b\u4efb\u52a1\u5e76\u8def\u7531\u5230\u5408\u9002\u9636\u6bb5"
+    ]
+  }
+}

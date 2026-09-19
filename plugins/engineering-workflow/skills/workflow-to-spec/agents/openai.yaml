@@ -1,0 +1,5 @@
+interface:
+  display_name: "Spec 固化"
+  short_description: "把已澄清需求整理为可确认的本地 Spec"
+policy:
+  allow_implicit_invocation: true

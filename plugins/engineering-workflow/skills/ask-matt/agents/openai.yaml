@@ -1,0 +1,5 @@
+interface:
+  display_name: "通用工程流程路由"
+  short_description: "从需求澄清路由到实现、PR 和合并收尾"
+policy:
+  allow_implicit_invocation: false

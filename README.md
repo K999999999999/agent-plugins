@@ -4,9 +4,12 @@
 
 ## 范围
 
-本仓库只管理个人维护的 Skill，不复制 Codex 官方内置 Skill、Plugin 缓存、账号配置或运行时状态。
+本仓库只管理个人维护或明确纳入管理的 Plugin，不复制 Codex 官方内置 Skill、Plugin 缓存、账号配置或运行时状态。
 
-当前 Plugin：`agent-engineering-skills`
+当前有两个独立 Plugin：
+
+- `agent-engineering-skills`：具体工程问题的能力 Skill；
+- `engineering-workflow`：从需求路由、Spec、Design Review、Ticket、TDD 到交付的流程 Skill。
 
 包含的 Skill：
 
@@ -45,21 +48,23 @@ plugins/agent-engineering-skills/
 ```text
 codex plugin marketplace add "E:\Kaifa\project 2026\agent-plugins"
 codex plugin add agent-engineering-skills@personal
+codex plugin add engineering-workflow@personal
 ```
 
 更新 Plugin 内容后，应在新 Thread（会话）中测试，确保 Codex 重新加载 Skill 和工具。
 
 ## 验证
 
-每个 Skill 都应通过 `skill-creator` 的 `quick_validate.py`；完整 Plugin 应通过 `plugin-creator` 的 `validate_plugin.py`。中文文件在 Windows 上验证时使用 Python UTF-8 模式：
+每个 Skill 都应通过 `skill-creator` 的 `quick_validate.py`；两个 Plugin 都应通过 `plugin-creator` 的 `validate_plugin.py`。中文文件在 Windows 上验证时使用 Python UTF-8 模式：
 
 ```text
 python -X utf8 <skill-creator>/scripts/quick_validate.py <skill-path>
 python -X utf8 <plugin-creator>/scripts/validate_plugin.py plugins/agent-engineering-skills
+python -X utf8 <plugin-creator>/scripts/validate_plugin.py plugins/engineering-workflow
 ```
 
 包含 Bash 模板的 Skill 还应执行 `bash -n <script>`；向导脚本不要在验证时自动端到端运行，因为它们需要人工输入。
 
 ## 发布边界
 
-当前仓库尚未选择开源许可证。确定许可证和各 Skill 的来源/归属后，再将仓库公开发布或 Push 到远程仓库。
+当前仓库尚未选择统一的开源许可证。`engineering-workflow` 保留了当前活动 Plugin 的 `Proprietary` 标记；确定两个 Plugin 的来源、归属和发布范围后，再将仓库公开发布或 Push 到远程仓库。

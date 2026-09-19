@@ -1,0 +1,5 @@
+interface:
+  display_name: "TDD"
+  short_description: "用 Red-Green-Refactor 固化行为证据"
+policy:
+  allow_implicit_invocation: true
