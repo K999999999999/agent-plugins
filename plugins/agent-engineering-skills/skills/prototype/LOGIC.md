@@ -63,7 +63,7 @@ Logic Prototype 用一个可分享、可点击的单文件 HTML，验证状态�
 
 ### 5. 记录结论
 
-原型回答问题后，记录结论和关键场景。经过用户确认的状态规则进入本地 Spec；领域术语变化按 `domain-modeling` 处理。只有真实代码实现任务被确认后，才由 `implement` 重新实现并由 `tdd` 覆盖。
+原型回答问题后，记录结论和关键场景。经过用户确认的状态规则进入目标仓库约定的 Spec；领域术语变化按 `domain-modeling` 处理。只有真实代码实现任务被确认后，才由 `workflow-implement` 重新实现并由 `workflow-tdd` 覆盖。
 
 ## 反模式
 

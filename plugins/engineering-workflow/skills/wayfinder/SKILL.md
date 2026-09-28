@@ -1,11 +1,15 @@
 ---
 name: wayfinder
-description: "把无法在一个上下文中完成的大型工作拆成可逐个解决的本地决策 Ticket，直到进入 Spec 或实现的路径清晰。"
+description: "手动规划跨多个模块、多个 session 且路线尚未明确的大型工程目标，把它拆成关键决策 Ticket；普通需求澄清使用 workflow-grill-with-docs。"
 ---
 
 # Wayfinder
 
-Wayfinder（路径规划）用于处理规模大、决策多、当前路线不清晰的工作。它的目标是找到通往 Destination（目标）的路，不是直接冲到目标，更不是替代 `to-spec`、`to-tickets` 或 `implement`。
+Wayfinder（路径规划）用于处理规模大、跨多个模块或 session、决策多且当前路线不清晰的工程目标。它规划到达 Destination（目标）的关键决策和阶段，不直接澄清一个普通功能的需求，也不替代 `workflow-to-spec`、`workflow-to-tickets` 或 `workflow-implement`。
+
+本 Skill 仅在用户明确手动调用或明确要求大型工程规划时启动。`ask-matt` 可以推荐 `$wayfinder`，推荐后必须停止并等待用户决定；不要自动创建 Wayfinder 地图。
+
+普通需求澄清由 `workflow-grill-with-docs` 负责。Wayfinder 在规划过程中只有需要厘清 Destination 或某项决策时，才使用普通澄清流程；这不会把整个大型规划降格为一次普通需求澄清。
 
 ## 本地地图
 
@@ -25,7 +29,7 @@ Wayfinder（路径规划）用于处理规模大、决策多、当前路线不�
 - `Status: open / in-progress / done / blocked` 表示本地工作状态；
 - `Owner:` 可选，用于多会话时声明当前处理者。
 
-不要把 Wayfinder 地图和实现 Ticket 混为一类：Wayfinder Ticket 解决“需要做出什么决定”，`to-tickets` Ticket 描述“已经决定后要实现什么行为”。
+不要把 Wayfinder 地图和实现 Ticket 混为一类：Wayfinder Ticket 解决“需要做出什么决定”，`workflow-to-tickets` Ticket 描述“已经决定后要实现什么行为”。
 
 ## Plan, don't do
 
@@ -34,7 +38,7 @@ Wayfinder 默认只做规划。每个决策 Ticket 都应该解决一个具体�
 - Destination 已经清楚；
 - 所有开始实现前必须解决的决定已经有结论；
 - 不再存在无法表达的关键不确定性；
-- 下一步可以交给 `to-spec`、`to-tickets` 或 `implement`。
+- 下一步可以交给 `workflow-to-spec`、`workflow-to-tickets` 或 `workflow-implement`。
 
 如果工作已经足够清晰、一个会话可以完成，不要创建 Wayfinder 地图，直接进入合适的下一阶段。
 
@@ -48,7 +52,7 @@ Wayfinder 默认只做规划。每个决策 Ticket 都应该解决一个具体�
 
 - **Research（研究）**：查阅文档、源码、标准或其他高可信资料，以解除一个事实问题；使用 `research`；
 - **Prototype（原型）**：用便宜、具体的临时产物验证 UI、逻辑或状态模型；使用 `prototype`；
-- **Grilling（澄清）**：通过一次一个问题确认目标、术语、范围或 Contract；使用 `grill-with-docs` 和 `domain-modeling`；
+- **Grilling（澄清）**：通过一次一个问题确认目标、术语、范围或 Contract；普通需求澄清使用 `workflow-grill-with-docs`，领域术语使用 `domain-modeling`；
 - **Task（人工任务）**：必须由用户完成的访问、配置或手工动作，以便后续做出决定；可使用 `wizard` 生成引导。
 
 Research 可以在不依赖其他决定时独立执行；其他类型默认一次只解决一个决策 Ticket，避免地图在同一会话中失去焦点。
@@ -75,9 +79,9 @@ Destination 决定范围。超出目标的工作不属于 Fog，而属于 Out of
 
 用户提出一个过大的模糊想法时：
 
-1. **确认 Destination。** 用 `grill-with-docs` 和 `domain-modeling` 明确最终要得到的 Spec、决定或变更；Destination 决定整个范围。
+1. **确认 Destination。** 对大型规划目标先明确最终要得到的 Spec、决定或变更；遇到普通需求问题时用 `workflow-grill-with-docs`，需要确认领域术语时用 `domain-modeling`。Destination 决定整个范围。
 2. **宽度优先查看未知区域。** 先从多个方向找出决策问题和能立即开始的前置研究，不要深入单一分支后才发现目标错了。
-3. **判断是否真的需要地图。** 如果路线已经清楚，直接报告不需要 Wayfinder，并建议进入 `to-spec` 或 `to-tickets`。
+3. **判断是否真的需要地图。** 如果路线已经清楚，直接报告不需要 Wayfinder，并建议进入 `workflow-to-spec` 或 `workflow-to-tickets`。
 4. **用户确认后创建地图。** 写入 Destination、Notes、空的 Decisions so far、Not yet specified 和 Out of Scope。
 5. **创建当前可精确描述的决策 Ticket。** 从 `01` 开始编号，按依赖关系填写 `Blocked by:`；无法精确描述的部分留在未知区域。
 6. **停止。** 创建地图本身不解决任何决定，也不实现目标。
@@ -89,7 +93,7 @@ Destination 决定范围。超出目标的工作不属于 Fog，而属于 Out of
 1. 只读取地图的低分辨率信息，按需读取相关 Ticket；
 2. 用户点名 Ticket 时使用指定项，否则选择第一个 `Status: open` 且所有 `Blocked by` 都已 `done` 的 Ticket；
 3. 开始工作前将其标记为 `Status: in-progress`，必要时填写 `Owner:`；
-4. 只解决当前一个决策，按 Ticket 类型使用 `research`、`prototype`、`grill-with-docs` 或 `wizard`；
+4. 只解决当前一个决策，按 Ticket 类型使用 `research`、`prototype`、`workflow-grill-with-docs` 或 `wizard`；
 5. 将答案写入该 Ticket 的 `## Resolution`，附上事实证据和未决风险；
 6. 更新为 `Status: done`，再在地图的 Decisions so far 添加一行摘要和相对路径；
 7. 检查哪些未知区域现在可以具体化为新 Ticket，并清除地图中已毕业的模糊描述；

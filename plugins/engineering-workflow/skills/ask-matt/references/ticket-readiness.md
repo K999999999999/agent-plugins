@@ -1,11 +1,11 @@
 # Ticket Readiness Review
 
-Ticket Readiness Review 是正式 Ticket 写入和用户确认前的只读门禁。它由当前主 Agent 执行，不启动独立 Agent，也不替代 `design-review`、实现后的 `code-review` 或 PR Review。
+Ticket Readiness Review 是正式 Ticket 写入和用户确认前的只读门禁。它由当前主 Agent 执行，不启动独立 Agent，也不替代 `workflow-design-review`、实现后的 `workflow-code-review` 或 PR Review。
 
 ## 输入
 
-- 已确认并通过 `design-review` 的 Spec；
-- `to-tickets` 生成的 Ticket 草案；
+- 已确认并通过 `workflow-design-review` 的 Spec；
+- `workflow-to-tickets` 生成的 Ticket 草案；
 - 目标仓库的 Agent instructions、Issue / tracker 规则和相关 Domain / Architecture / Contract；
 - 直接受影响的代码、测试和运行时事实。
 
@@ -30,7 +30,7 @@ Ticket Readiness Review 是正式 Ticket 写入和用户确认前的只读门禁
 - `READY`：可以交给用户确认 Ticket 拆分；
 - `NEED FIX`：指出最小修复，不能写入正式 Ticket 或进入实现。
 
-如果发现第 9 项未解决的问题，不在 Ticket 中猜测，返回 `to-spec` 或 `design-review`。
+如果发现第 9 项未解决的问题，不在 Ticket 中猜测，返回 `workflow-to-spec` 或 `workflow-design-review`。
 
 ## 输出
 
@@ -41,5 +41,5 @@ Findings:
 - <问题、依据、影响、最小修复>
 Dependencies: <依赖图是否合理>
 Evidence: <测试 / Evaluation / Acceptance 证据>
-Next: <用户确认拆分，或返回 Spec / design-review>
+Next: <用户确认拆分，或返回 workflow-to-spec / workflow-design-review>
 ```

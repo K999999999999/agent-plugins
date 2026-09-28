@@ -2,7 +2,9 @@
 
 这是一个用户级、通用的 Codex 工程工作流插件，不属于任何单一应用仓库。
 
-入口是 `$ask-matt`；阶段 Skill 使用 `workflow-*` 前缀，避免与目标环境已有的同名 Skill 冲突。执行时始终以目标仓库的 Agent instructions、Architecture、Domain、Spec、Ticket、CI 和 Git 规则为准。
+入口是 `$ask-matt`；它只判断阶段、推荐下一步，然后停止等待用户决定。阶段 Skill 使用 `workflow-*` 前缀，避免与目标环境已有的同名 Skill 冲突。执行时始终以目标仓库的 Agent instructions、Architecture、Domain、Spec、Ticket、CI 和 Git 规则为准。
+
+`setup-engineering-workflow` 是每个仓库手动执行一次的初始化 Skill；Plugin 安装或正常工作流不会自动触发它。`wayfinder` 也需手动调用，用于大型、跨模块、跨多个 session 且决策路线不清的工程规划。普通需求澄清由 `workflow-grill-with-docs` 负责。
 
 ## 安装
 

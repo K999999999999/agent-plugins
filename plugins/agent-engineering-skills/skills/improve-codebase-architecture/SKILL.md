@@ -7,7 +7,7 @@ description: "扫描代码库中的架构摩擦，提出 Deep Module 改进候�
 
 扫描代码库，找出可以通过 Deep Module（深模块）改善的架构摩擦：让复杂度集中在 Module 内部，用更小的 Interface 隐藏实现，改善测试性和 AI 可导航性。
 
-这是一个只读的架构探索 Skill。它提出候选，不直接重构代码；候选被用户选择并澄清后，再进入 `to-spec`、`to-tickets` 和 `implement`。
+这是一个只读的架构探索 Skill。它提出候选，不直接重构代码；候选被用户选择并澄清后，再进入 `workflow-to-spec`、`workflow-to-tickets` 和 `workflow-implement`。
 
 ## 设计语言
 
@@ -103,7 +103,7 @@ description: "扫描代码库中的架构摩擦，提出 Deep Module 改进候�
 
 用户选择后，按以下顺序澄清：
 
-1. 用 `grill-with-docs` 的规则确认问题、场景、范围和约束；
+1. 用 `workflow-grill-with-docs` 的规则确认问题、场景、范围和约束；
 2. 用 `codebase-design` 的词汇确定 Module、Interface、Seam、Adapter 和隐藏的 Implementation；
 3. 按 [DEEPENING.md](../codebase-design/DEEPENING.md) 分类依赖和测试策略；
 4. 需要比较不同 Interface 时使用 [DESIGN-IT-TWICE.md](../codebase-design/DESIGN-IT-TWICE.md)；
@@ -114,22 +114,22 @@ description: "扫描代码库中的架构摩擦，提出 Deep Module 改进候�
 
 ## 交接
 
-当选中候选的目标、范围、Interface、测试 Seam、Contract 和验收方向已经明确时，建议进入 `to-spec`。不要自动调用下一阶段。
+当选中候选的目标、范围、Interface、测试 Seam、Contract 和验收方向已经明确时，建议进入 `workflow-to-spec`。不要自动调用下一阶段。
 
 后续流程：
 
 ```text
 架构候选
     ↓
-grill-with-docs
+workflow-grill-with-docs
     ↓
 domain-modeling / codebase-design
     ↓
-to-spec
+workflow-to-spec
     ↓
-to-tickets
+workflow-to-tickets
     ↓
-implement
+workflow-implement
 ```
 
 本 Skill 不会：

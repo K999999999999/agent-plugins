@@ -8,7 +8,7 @@
 | --- | --- |
 | 临时诊断、一次性实验、不会进入默认分支 | 读取必要事实，完成实验或报告；不进入 PR 交付 |
 | 局部、稳定 Contract 内的小修改 | 可跳过不必要的 Spec / Ticket；保留相关测试、Diff Review、Candidate 和项目规定的交付门禁 |
-| 预计长期维护的普通行为变化 | Spec → Design Review → Ticket → Ticket Readiness → TDD / Implement → Code Review → Candidate → PR |
+| 预计长期维护的普通行为变化 | `workflow-to-spec` → `workflow-design-review` → `workflow-to-tickets` → `workflow-ticket-readiness` → `workflow-tdd` / `workflow-implement` → `workflow-code-review` → Candidate → `workflow-delivery` |
 | 公共 Contract、依赖方向、状态、安全或运行时变化 | 提高 Design Review、测试、Integration、Business Acceptance、Runtime / Security 验证级别 |
 | Deprecation、Migration、全局重命名、批量生成或跨团队变化 | 使用 Migration / Large-Scale Change 规划，拆成可独立验证和提交的切片 |
 

@@ -126,7 +126,7 @@ _避免_：用 Boundary 代替 Seam；在 DDD 语境中，Boundary 还可能指 
 - 设计或比较 Module、Interface、Seam 和 Adapter；
 - 评估模块是否过浅、过深或只是透传；
 - 为测试和替换找到最小有效接缝；
-- 为后续 Spec、TDD 和实现提供设计语言。
+- 为后续 `workflow-to-spec`、`workflow-tdd` 和 `workflow-implement` 提供设计语言。
 
 本 Skill 不会自动：
 

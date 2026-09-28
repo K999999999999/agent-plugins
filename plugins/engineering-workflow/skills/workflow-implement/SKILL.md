@@ -108,7 +108,7 @@ SOLID 不是机械检查表。实现阶段重点使用：
 - 公共 Contract；
 - 依赖方向；
 - 重要架构抽象；
-- 已确认的 design-review 决策。
+- 已确认的 `workflow-design-review` 决策。
 
 ## 完成门禁
 

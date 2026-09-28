@@ -7,7 +7,7 @@ description: "显式启动通用工程工作流，按需求阶段、软件生命
 
 使用 `$ask-matt` 作为工程任务的入口。先读取目标仓库的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，再依据目标仓库的规则判断任务应该进入哪个阶段。
 
-本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。每次跨阶段都要说明当前阶段、输入事实、完成条件和是否需要用户确认。
+本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。推荐下一步后立即停止，不自动调用 Skill、不执行工作流，也不推进阶段；每次跨阶段都要说明当前阶段、输入事实、完成条件和是否需要用户确认。
 
 ## 先判断变更形状
 
@@ -22,6 +22,13 @@ description: "显式启动通用工程工作流，按需求阶段、软件生命
 小而稳定的改动可以采用轻量路径；长期维护的普通变更进入标准路径；Deprecation、Migration、全局重命名、自动生成的大范围修改或运行时高风险变化必须提高规划和验证级别。不要用代码行数作为唯一标准，也不要让长期 Feature branch 变成未经验证的集成线。详细规则见 [Change Shaping](references/change-shaping.md)。
 
 ## 标准路由
+
+在普通工程阶段路由前，先识别两个需要用户手动选择的专用入口：
+
+- 如果用户明确要求为当前仓库初始化工程工作流，推荐 `$setup-engineering-workflow`；它只在用户手动调用时运行，不因 Plugin 安装或配置缺失自动启动。推荐后停止。
+- 如果目标跨多个模块或 session，规模很大且关键决策路径尚不清楚，推荐 `$wayfinder`。普通单项需求澄清继续使用 `$workflow-grill-with-docs`。推荐后停止，不自动创建规划地图。
+
+其他任务按以下工作流路由：
 
 ```text
 需求
@@ -60,7 +67,7 @@ description: "显式启动通用工程工作流，按需求阶段、软件生命
 
 ### 5. Ticket 已确认
 
-使用 `$workflow-implement`。读取 Ticket、Spec、相关 Contract 和仓库规则；行为变化执行 TDD，运行 targeted tests，在当前上下文完成轻量 `code-review`，通过后只创建本地 Commit。
+使用 `$workflow-implement`。读取 Ticket、Spec、相关 Contract 和仓库规则；行为变化执行 TDD，运行 targeted tests，在当前上下文完成轻量 `$workflow-code-review`，通过后只创建本地 Commit。
 
 ### 6. 需要直接补测试或审查已有变更
 

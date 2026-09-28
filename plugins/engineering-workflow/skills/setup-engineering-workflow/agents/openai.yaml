@@ -1,0 +1,5 @@
+interface:
+  display_name: "初始化仓库工程工作流"
+  short_description: "发现并复用仓库约定，确认后再补充缺失配置"
+policy:
+  allow_implicit_invocation: false

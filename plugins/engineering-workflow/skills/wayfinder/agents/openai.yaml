@@ -1,5 +1,5 @@
 interface:
   display_name: "路径规划"
-  short_description: "把大型工作拆成可解决的本地决策 Ticket"
+  short_description: "手动规划大型跨模块工程目标的决策路径"
 policy:
   allow_implicit_invocation: false

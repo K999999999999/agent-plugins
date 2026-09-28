@@ -1,7 +1,7 @@
 {
   "name": "agent-engineering-skills",
   "version": "0.1.0",
-  "description": "Reusable engineering workflow Skills for Codex.",
+  "description": "Independent engineering capabilities for software design, debugging, research, and prototyping in Codex.",
   "author": {
     "name": "K999999999999"
   },
@@ -15,8 +15,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Agent Engineering Skills",
-    "shortDescription": "Reusable engineering workflow Skills for Codex.",
-    "longDescription": "A personal collection of explicit Codex Skills for software design, debugging, research, project planning, and safe engineering workflows.",
+    "shortDescription": "Independent engineering capability Skills for Codex",
+    "longDescription": "A personal collection of Codex Skills for software design, debugging, research, prototyping, and other engineering capabilities that can be used outside the main workflow.",
     "developerName": "K999999999999",
     "category": "Productivity",
     "capabilities": [],

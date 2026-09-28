@@ -9,7 +9,7 @@ description: "在已明确范围内，以最小可验证改动改善代码职责
 
 ## 适用范围与边界
 
-- 用于已经明确问题和目标的小范围 Refactor（重构）。需求或业务行为变化使用 `implement` / `tdd`；架构方向、Module 一级职责或稳定公共 Contract（契约）仍不清楚时，交给 `codebase-design`、`improve-codebase-architecture` 或设计澄清流程。
+- 用于已经明确问题和目标的小范围 Refactor（重构）。需求或业务行为变化使用 `workflow-implement` / `workflow-tdd`；架构方向、Module 一级职责或稳定公共 Contract（契约）仍不清楚时，交给 `codebase-design`、`improve-codebase-architecture` 或 `workflow-grill-with-docs`。
 - 遵循 **Global awareness, local execution（全局感知，局部执行）**：先理解全局结构和依赖，再选择最小合理修改范围；不因调用本 Skill 就扫描并重构整个项目。
 - 从最低层级开始判断：`Level 1` 函数/单文件，`Level 2` 单模块/单目录，`Level 3` 跨模块，`Level 4` 架构级。默认禁止直接做 `Level 4`；只有低层级无法消除根因时才提出扩大范围，并说明证据。触及稳定 Architecture（架构）、Domain（领域事实）、公共 Contract、权限或数据所有权时，先暂停并请求设计确认。
 - 保留用户已有修改，不覆盖、不删除、不回退；遵循仓库 `AGENTS.md` 的交付、Commit 和安全边界。
