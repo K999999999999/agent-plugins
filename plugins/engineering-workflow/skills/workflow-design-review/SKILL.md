@@ -1,6 +1,6 @@
 ---
 name: workflow-design-review
-description: "在编码前只读审查已确认的 Spec 或实现设计，重点验证 Use Case、变化边界、依赖方向、复杂度、Contract、可测试性和最小充分设计。"
+description: "编码前已有已确认的 Spec 或实现设计，需要判断方案是否可实施时，进行只读 Design Review，检查用例、边界、依赖、Contract、复杂度和可测试性；不审查代码 Diff。"
 ---
 
 # Design Review（设计审查）

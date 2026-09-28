@@ -1,6 +1,6 @@
 ---
 name: workflow-tdd
-description: "使用 Red-Green-Refactor 为目标项目的 Contract、行为、边界和失败行为建立可维护、确定性且与风险匹配的测试证据。"
+description: "为已确定的功能或行为变更建立测试时，按 Red-Green-Refactor 编写并验证确定性测试；不用于只定位既有故障原因或代码 Review。"
 ---
 
 # Test-Driven Development

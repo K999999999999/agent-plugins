@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: "为深模块设计清晰的 Interface；用于判断模块深度、Seam 位置、可测试性和是否需要 Adapter。"
+description: "需要设计或重构单个模块的 Interface、Seam 或测试边界时，用深模块方法判断模块深度及是否需要 Adapter；不用于全仓架构扫描或 Spec 审查。"
 ---
 
 # Codebase Design

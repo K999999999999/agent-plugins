@@ -1,6 +1,6 @@
 ---
 name: workflow-delivery
-description: "将已形成 candidate 的变更按目标仓库规则完成风险匹配的最终验收、CI 反馈、PR、Auto-merge 监控和合并后清理。"
+description: "实现和 Review 已完成并形成 candidate，用户要求交付时，按仓库规则检查候选、处理 CI 与 PR，并在获准后跟进合并和清理；不用于编写功能。"
 ---
 
 # PR 交付与收尾

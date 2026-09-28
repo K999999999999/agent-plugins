@@ -1,6 +1,6 @@
 ---
 name: workflow-code-review
-description: "在当前上下文只读检查实现是否满足 Spec 或 Ticket，并审查变更的正确性、可理解性、持续可维护性、测试证据和受影响工程边界。"
+description: "代码或配置已有待审 Diff，且需要判断它是否满足 Spec / Ticket 时，进行只读实现 Review，检查正确性、范围、测试证据和受影响边界；不审查编码前设计。"
 ---
 
 # Code Review

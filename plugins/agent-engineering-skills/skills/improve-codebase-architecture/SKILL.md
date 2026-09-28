@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: "扫描代码库中的架构摩擦，提出 Deep Module 改进候选，并在用户选择后进入设计澄清。"
+description: "用户要求评估代码库或子系统的架构问题时，只读扫描架构摩擦并提出 Deep Module 改进候选；不直接重构代码。"
 ---
 
 # 改善代码库架构

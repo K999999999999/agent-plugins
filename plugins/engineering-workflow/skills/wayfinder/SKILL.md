@@ -1,6 +1,6 @@
 ---
 name: wayfinder
-description: "手动规划跨多个模块、多个 session 且路线尚未明确的大型工程目标，把它拆成关键决策 Ticket；普通需求澄清使用 workflow-grill-with-docs。"
+description: "用户明确要求规划大型、跨多个模块或 session、且关键路线尚未确定的工程目标时，整理阶段与决策 Ticket；具体功能的需求澄清走 workflow-grill-with-docs。"
 ---
 
 # Wayfinder

@@ -1,6 +1,6 @@
 ---
 name: workflow-implement
-description: "根据已确认的 Spec、Ticket 或明确的小范围任务，在 Contract 内完成可靠、可测试、职责清晰且最小充分的实现、Review 和本地 Commit。"
+description: "用户要求实现已确认的 Spec / Ticket，或边界稳定的小范围改动时，在既有 Contract 内编码、验证、Review 并按项目规则本地提交；不负责澄清或重新设计。"
 ---
 
 # 实现任务

@@ -1,6 +1,6 @@
 ---
 name: workflow-to-tickets
-description: "把已确认且通过设计审查的 Spec 拆分为可独立验证、可审查、可回滚或可迁移的纵向 Ticket。"
+description: "Spec 已确认且 Design Review 已通过，需要安排实施切片时，将其拆成可独立验证和审查的纵向 Ticket 草案；不直接实现或写入未确认的 Ticket。"
 ---
 
 # 拆分 Ticket

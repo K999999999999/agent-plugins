@@ -1,6 +1,6 @@
 ---
 name: research
-description: "针对一个明确问题查阅高可信一手资料，并把带来源的结论记录为本地 Markdown。"
+description: "决策依赖仓库外部事实、第三方 API 或当前版本行为时，查阅官方文档、标准、论文等一手资料，并将带来源的结论记录为本地 Markdown。"
 ---
 
 # Research

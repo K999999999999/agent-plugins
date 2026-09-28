@@ -1,6 +1,6 @@
 ---
 name: ask-matt
-description: "显式启动通用工程工作流，按需求阶段、软件生命周期、变更大小和风险路由到 Spec、Design Review、Ticket、TDD、Review 或 PR 交付。"
+description: "用户明确要求判断工程任务所处阶段或推荐下一步时，读取仓库规则并路由到一个 workflow Skill；只给建议后停止，不执行工作流。"
 ---
 
 # 通用工程流程路由

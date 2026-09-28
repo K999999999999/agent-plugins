@@ -1,6 +1,6 @@
 ---
 name: workflow-ticket-readiness
-description: "在 Ticket 正式写入和用户确认前，只读检查 Scope、变更形状、依赖、Owner、验收、迁移 / 回滚、验证证据和实施边界。"
+description: "Ticket 草案已经拆出、尚未正式写入或确认时，只读检查其范围、依赖、Owner、验收、迁移 / 回滚和验证计划是否足以安全实施。"
 ---
 
 # Ticket Readiness Review

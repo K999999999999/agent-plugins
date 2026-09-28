@@ -1,6 +1,6 @@
 ---
 name: resolving-merge-conflicts
-description: "处理正在进行的 Git Merge / Rebase 冲突；理解双方意图后逐块解决，并完成验证。"
+description: "Git 仓库当前正处于 Merge 或 Rebase 冲突，且用户要求解决冲突时，逐块理解双方意图、解决并验证；不用于普通未提交改动。"
 ---
 
 # 解决 Merge / Rebase 冲突

@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-description: "构建和校准项目的领域模型；用于讨论代码库术语、编辑 CONTEXT.md 或记录 ADR。"
+description: "需要澄清或校准代码库的领域概念、术语、边界场景和业务规则，并把已确认知识写入 CONTEXT.md 或 ADR 时使用。"
 ---
 
 # 领域建模

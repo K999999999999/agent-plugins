@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: "用一次性 Prototype 快速回答一个具体的逻辑、状态模型、数据形状或 UI 设计问题。"
+description: "用户想先验证一个具体逻辑、状态模型、数据形状或界面方案时，制作一次性、与生产代码隔离的 Prototype；不作为正式实现。"
 ---
 
 # Prototype
