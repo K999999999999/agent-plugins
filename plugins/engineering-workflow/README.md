@@ -2,9 +2,25 @@
 
 这是一个用户级、通用的 Codex 工程工作流插件，不属于任何单一应用仓库。
 
-入口是 `$ask-matt`；它只判断阶段、推荐下一步，然后停止等待用户决定。阶段 Skill 使用 `workflow-*` 前缀，避免与目标环境已有的同名 Skill 冲突。执行时始终以目标仓库的 Agent instructions、Architecture、Domain、Spec、Ticket、CI 和 Git 规则为准。
+## 显式调用
 
-`setup-engineering-workflow` 是每个仓库手动执行一次的初始化 Skill；Plugin 安装或正常工作流不会自动触发它。`wayfinder` 也需手动调用，用于大型、跨模块、跨多个 session 且决策路线不清的工程规划。普通需求澄清由 `workflow-grill-with-docs` 负责。
+本插件中的所有 Skill 都是 manual-only。普通自然语言请求不会自动启动工作流阶段。知道当前阶段时，直接调用相应 Skill；不确定下一步时调用 `/ask-matt`。
+
+`ask-matt` 读取目标仓库的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，判断工程阶段后，只推荐一个明确的 Skill 调用及简短原因，然后停止等待用户决定。它不自动调用被推荐 Skill、不执行工作流，也不推进阶段。阶段 Skill 使用 `workflow-*` 前缀，避免与目标环境已有的同名 Skill 冲突。执行时始终以目标仓库的 Agent instructions、Architecture、Domain、Spec、Ticket、CI 和 Git 规则为准。
+
+示例：
+
+```text
+/ask-matt
+需求已经确定，但还没有正式 Spec，下一步应该做什么？
+
+/workflow-to-spec
+把已经确认的需求整理成 Spec
+```
+
+Codex 文档中显式调用 Skill 的写法为 `$skill-name`；若当前客户端提供斜杠命令，则可用 `/skill-name`。具体前缀由客户端界面决定。
+
+`setup-engineering-workflow` 是每个仓库手动执行一次的初始化 Skill。`wayfinder` 用于大型、跨模块、跨多个 session 且决策路线不清的工程规划。普通需求澄清由 `workflow-grill-with-docs` 负责。三者与本插件的其他 Skill 一样，均需显式调用。
 
 ## 安装
 

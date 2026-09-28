@@ -2,4 +2,4 @@ interface:
   display_name: "Code Review"
   short_description: "在当前上下文检查变更范围和验证证据"
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

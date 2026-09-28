@@ -2,4 +2,4 @@ interface:
   display_name: "需求澄清"
   short_description: "把模糊需求澄清为可验证的目标和边界"
 policy:
-  allow_implicit_invocation: true
+  allow_implicit_invocation: false

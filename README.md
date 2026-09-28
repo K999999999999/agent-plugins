@@ -32,7 +32,29 @@
 - `resolving-merge-conflicts`：Merge / Rebase 冲突处理
 - `wizard`：需要用户本人操作的交互式本地向导
 
-`ask-matt` 只负责导航，不自动执行推荐阶段。`wayfinder` 和 `setup-engineering-workflow` 仅由用户手动调用；它们不会因任务规模、Plugin 安装或仓库缺少配置而自动触发。各 Skill 的隐式调用策略以对应 `agents/openai.yaml` 为准。不要把仓库中的个人工程约定误认为 Codex 官方标准。
+## 调用方式：Explicit Skill Invocation
+
+本仓库的 21 个 Skill 全部采用显式调用（manual-only）：普通自然语言请求不会自动启动其中任何 Skill。知道要做什么时，直接调用对应 Skill；不确定当前阶段或下一步时，先调用 `/ask-matt` 获取建议。
+
+`ask-matt` 只判断阶段、推荐一个明确的 Skill 名称并简述原因，然后停止。它不会自动调用被推荐的 Skill；用户需要自行显式启动下一步。
+
+示例：
+
+```text
+/diagnosing-bugs
+排查登录接口 500
+
+/workflow-to-spec
+把已经确认的需求整理成 Spec
+
+/workflow-code-review
+Review 当前已经实现完成的代码
+
+/research
+研究 LangGraph checkpoint 的官方实现方式
+```
+
+Codex 文档中的显式调用示例使用 `$skill-name`；若当前客户端将 Skill 暴露为斜杠命令，可使用 `/skill-name`。两种写法指向同一 Skill，具体前缀取决于客户端界面。调用策略以每个 Skill 的 `agents/openai.yaml` 中 `policy.allow_implicit_invocation` 为准，均须为 `false`。
 
 ## 目录
 

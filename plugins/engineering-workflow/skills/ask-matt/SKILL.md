@@ -7,7 +7,7 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 使用 `$ask-matt` 作为工程任务的入口。先读取目标仓库的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，再依据目标仓库的规则判断任务应该进入哪个阶段。
 
-本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。推荐下一步后立即停止，不自动调用 Skill、不执行工作流，也不推进阶段；每次跨阶段都要说明当前阶段、输入事实、完成条件和是否需要用户确认。
+本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill 或独立专项 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。每次只推荐一个最合适的下一步，给出明确 Skill 调用和简短原因后立即停止；不自动调用 Skill、不执行工作流，也不推进阶段。用户必须自行显式启动被推荐 Skill。
 
 ## 先判断变更形状
 
@@ -87,6 +87,24 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 目标仓库明确允许直接提交或具有不同交付规则时，以目标仓库规则为准；本 Skill 不把 PR、Auto-merge 或完整 Real E2E 强加给不适用的项目。
 
+## 专项能力路由
+
+当用户的问题属于独立专项能力，而不是主工作流阶段时，推荐最匹配的一项并停止：
+
+| 用户目标 | 推荐 Skill | 适用边界 |
+|---|---|---|
+| 诊断已有 Bug、异常、测试失败或性能回归 | `/diagnosing-bugs` | 定位现有故障；不默认进入修复 |
+| 查证仓库外部事实、第三方 API 或当前版本行为 | `/research` | 一手资料研究并记录来源 |
+| 快速验证具体逻辑、状态模型、数据形状或 UI 方案 | `/prototype` | 一次性原型；不作为正式实现 |
+| 设计具体模块的接口、Seam 或测试边界 | `/codebase-design` | 单模块设计；不做全仓架构扫描 |
+| 校准领域概念、术语、边界场景或业务规则 | `/domain-modeling` | 领域模型；不替代一般需求澄清 |
+| 寻找代码库或子系统的架构改进机会 | `/improve-codebase-architecture` | 只读探索并提出候选；不直接重构 |
+| 保持业务行为不变，修复已明确的局部维护性问题 | `/maintainability-refactor` | 有范围的重构；不实现功能或改造整体架构 |
+| 解决当前 Git Merge / Rebase 冲突 | `/resolving-merge-conflicts` | 仓库已处于冲突状态 |
+| 引导用户完成 AI 无法代办的人工配置或迁移步骤 | `/wizard` | 一次性交互式本地向导 |
+
+完整工作流阶段同样按前面的标准路由推荐具体 Skill。用户要求导航时，无论推荐工作流 Skill 还是专项 Skill，都只报告调用名称和原因，不继续执行。
+
 ## 不可跳过的授权边界
 
 - 用户确认 Spec 不等于实现授权。
@@ -105,14 +123,9 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 每次路由使用以下结构：
 
 ```text
-当前阶段: <需求澄清 | Spec | 设计审查 | Ticket | Ticket Readiness | 实现 | 测试 | Review | candidate / PR 交付>
-使用 Skill: <skill>
-Change Profile: <Lifetime / Size / Risk / Evidence / Delivery>
-原因: <为什么当前进入这个阶段>
-输入事实: <已经读取或确认的事实>
-完成条件: <本阶段 Done When>
-需要用户确认: <是 / 否，以及确认会授权什么>
-边界: <本阶段不做什么>
+当前阶段: <阶段名称>
+推荐 Skill: /<skill-name>
+原因: <为什么这是下一步；一句话>
 ```
 
 详细 Ticket 门禁见 `references/ticket-readiness.md`；详细 PR 和清理门禁见 `references/delivery-gates.md`；跨阶段上下文处理见 `references/phase-boundaries.md`；目标仓库适配规则见 `references/project-adapter.md`。
