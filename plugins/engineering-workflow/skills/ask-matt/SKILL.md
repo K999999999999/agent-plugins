@@ -5,7 +5,9 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 # 通用工程流程路由
 
-使用 `$ask-matt` 作为工程任务的入口。先读取目标仓库的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，再依据目标仓库的规则判断任务应该进入哪个阶段。
+`$ask-matt` 是可选的阶段路由器，仅在用户主动询问“现在在哪个阶段 / 下一步该做什么”或明确要求路由建议时使用。它不是新会话或工程任务的必经入口。目标仓库的 `AGENTS.md` 可以独立规定新会话状态恢复；不要用本 Skill 代替仓库规则要求的检查。
+
+路由前读取目标仓库适用的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，再依据仓库规则判断阶段。首先区分：用户尚无候选目标时是 `需求发现`；已有候选目标但重要行为、范围、边界或验收不清时是 `需求澄清`。
 
 本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill 或独立专项 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。每次只推荐一个最合适的下一步，给出明确 Skill 调用和简短原因后立即停止；不自动调用 Skill、不执行工作流，也不推进阶段。用户必须自行显式启动被推荐 Skill。
 
@@ -31,51 +33,60 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 其他任务按以下工作流路由：
 
 ```text
-需求
-  → workflow-grill-with-docs（目标、术语、事实和边界不清时）
-  → workflow-to-spec（形成可确认的行为 Contract）
+问题 / 机会但尚无候选目标
+  → workflow-discovery（探索问题、证据、候选结果和选项）
+已有候选目标但行为 / 范围 / 边界 / 验收有重要歧义
+  → workflow-grill-with-docs（需求澄清）
+目标结果和范围足够明确
+  → workflow-to-spec（按目标仓库规则形成短 / 完整 Spec）
   → 用户确认 Spec
-  → workflow-design-review（编码前只读审查）
-  → workflow-to-tickets（拆分纵向 Ticket）
-  → workflow-ticket-readiness（检查 Ticket 是否可实施）
-  → 用户确认 Ticket 拆分
-  → workflow-implement
-       → workflow-tdd（行为变化时）
-       → 确定性测试
-       → workflow-code-review（当前上下文轻量 Review）
-       → 本地 Commit
+       ├─ 短 Spec / 单会话小改动 → workflow-implement
+       └─ 完整 Spec / 多阶段工作
+            → workflow-design-review（编码前只读审查）
+            → workflow-to-tickets（拆分纵向 Ticket）
+            → workflow-ticket-readiness（检查 Ticket 是否可实施）
+            → 用户确认 Ticket 拆分
+            → workflow-implement
+  → workflow-tdd（行为变化时）
+  → 确定性测试
+  → workflow-code-review（当前上下文轻量 Review）
+  → 本地 Commit
   → workflow-delivery（candidate、PR、Auto-merge 和清理）
 ```
 
 ## 阶段判断
 
-### 1. 需求或边界不清
+### 1. 尚无候选目标：需求发现
+
+使用 `$workflow-discovery`。当用户知道问题或机会、但还不知道应该追求什么结果时，先检查相关事实，与用户探索证据、候选结果和选项。不要把探索当成已澄清需求或自动形成实施授权。
+
+### 2. 已有候选目标但边界不清：需求澄清
 
 使用 `$workflow-grill-with-docs`。一次只问一个最能减少不确定性的关键问题，优先确认目标、用户场景、领域术语、范围、Contract 和验收条件。不要在需求未确认前实现代码、创建正式 Ticket 或创建 PR。
 
-### 2. 需求清楚但没有行为 Contract
+### 3. 需求清楚但没有行为 Contract
 
-使用 `$workflow-to-spec`。Spec 的保存位置、格式和命名以目标仓库的规则为准；如果仓库没有规定，先提出最小约定，不把某个项目的路径假设带入其他仓库。Spec 未经用户确认不能作为实现授权。
+使用 `$workflow-to-spec`。由目标仓库规则和变更规模决定短 Spec 或完整 Spec。短 Spec 至少写明目标、预期结果、验收方式和验证方式；用户确认后，小范围、单会话且不改变稳定 Contract 的工作可直接进入 `$workflow-implement`。完整 Spec 面向多阶段工作，确认后继续设计审查和 Ticket 流程。Spec 的保存位置、格式和命名以目标仓库规则为准；如果仓库没有规定，先提出最小约定，不把某个项目的路径假设带入其他仓库。Spec 未经用户确认不能作为实现授权。
 
-### 3. Spec 已确认但未审查
+### 4. Spec 已确认但未审查
 
 使用 `$workflow-design-review`。只有 `PASS` 或 `PASS WITH MINOR FIXES` 才能进入 Ticket；`NEED FIX` 或 `BLOCKED` 返回 Spec / 设计阶段。
 
-### 4. 需要拆分实现任务
+### 5. 需要拆分实现任务
 
 使用 `$workflow-to-tickets`。它先展示 Ticket 草案，不在用户确认前写入正式 Ticket。草案必须经过 `$workflow-ticket-readiness` 的 `READY` 检查，并遵循目标仓库对本地记录或外部 tracker 的规定。
 
-### 5. Ticket 已确认
+### 6. Ticket 已确认
 
 使用 `$workflow-implement`。读取 Ticket、Spec、相关 Contract 和仓库规则；行为变化执行 TDD，运行 targeted tests，在当前上下文完成轻量 `$workflow-code-review`，通过后只创建本地 Commit。
 
-### 6. 需要直接补测试或审查已有变更
+### 7. 需要直接补测试或审查已有变更
 
 - 用户明确要求测试驱动开发时，使用 `$workflow-tdd`。
 - 用户明确要求检查已有实现时，使用 `$workflow-code-review`。
 - 这些 Skill 不自动创建独立 Agent，不替代范围控制或用户授权。
 
-### 7. 形成可合入 candidate
+### 8. 形成可合入 candidate
 
 使用 `$workflow-delivery`。它依据目标仓库规则判断是否需要进入 PR：
 

@@ -11,12 +11,13 @@
 - `engineering-workflow`：完整软件工程工作流，包含路由、阶段处理、大型工程规划和仓库工作流初始化；
 - `agent-engineering-skills`：可以脱离主流程单独使用的工程专项能力。
 
-### `engineering-workflow`（12 个 Skill）
+### `engineering-workflow`（13 个 Skill）
 
-- `ask-matt`：判断当前工程阶段，推荐下一步后停止；
+- `ask-matt`：用户主动询问阶段或下一步时，推荐一个 Skill 后停止；
 - `setup-engineering-workflow`：每个仓库手动初始化一次，检查并复用仓库约定；
 - `wayfinder`：手动规划大型、跨模块、跨多个 session 且路线未明确的工程目标；
-- `workflow-grill-with-docs`：普通需求澄清；
+- `workflow-discovery`：从问题 / 机会中探索候选目标；
+- `workflow-grill-with-docs`：澄清已有候选目标的重要歧义；
 - `workflow-to-spec`、`workflow-design-review`、`workflow-to-tickets`、`workflow-ticket-readiness`；
 - `workflow-tdd`、`workflow-implement`、`workflow-code-review`、`workflow-delivery`。
 
@@ -34,9 +35,9 @@
 
 ## 调用方式：Explicit Skill Invocation
 
-本仓库的 21 个 Skill 全部采用显式调用（manual-only）：普通自然语言请求不会自动启动其中任何 Skill。知道要做什么时，直接调用对应 Skill；不确定当前阶段或下一步时，先调用 `/ask-matt` 获取建议。
+本仓库的 22 个 Skill 全部采用显式调用（manual-only）：普通自然语言请求不会自动启动其中任何 Skill。知道当前要做什么时，直接调用对应 Skill；尚无候选目标时可调用 `/workflow-discovery` 探索，已有候选目标但重要歧义未解时可调用 `/workflow-grill-with-docs` 澄清。只有主动询问当前阶段或下一步时，才调用 `/ask-matt` 获取建议。目标仓库的 `AGENTS.md` 可以独立驱动新会话状态检查与播报，这不等于自动调用本插件 Skill。
 
-`ask-matt` 只判断阶段、推荐一个明确的 Skill 名称并简述原因，然后停止。它不会自动调用被推荐的 Skill；用户需要自行显式启动下一步。
+`ask-matt` 只在用户主动请求导航时判断阶段、推荐一个明确的 Skill 名称并简述原因，然后停止。它不会自动调用被推荐的 Skill；用户需要自行显式启动下一步。
 
 示例：
 
@@ -84,7 +85,7 @@ codex plugin add engineering-workflow@personal
 
 ## 验证
 
-当前 21 个 Skill 都应通过 `skill-creator` 的 `quick_validate.py`；两个 Plugin 都应通过 `plugin-creator` 的 `validate_plugin.py`。中文文件在 Windows 上验证时使用 Python UTF-8 模式：
+当前 22 个 Skill 都应通过 `skill-creator` 的 `quick_validate.py`；两个 Plugin 都应通过 `plugin-creator` 的 `validate_plugin.py`。中文文件在 Windows 上验证时使用 Python UTF-8 模式：
 
 ```text
 python -X utf8 <skill-creator>/scripts/quick_validate.py <skill-path>
