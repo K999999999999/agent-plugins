@@ -19,6 +19,12 @@
 示例：
 
 ```text
+/workflow-discovery
+我发现这个流程经常让人忘记上次做到哪儿，但还不确定怎么改。
+
+/workflow-grill-with-docs
+我想在每次新会话开始时恢复上次工作，但恢复规则还没定。
+
 /ask-matt
 需求已经确定，但还没有正式 Spec，下一步应该做什么？
 
@@ -28,7 +34,9 @@
 
 Codex 文档中显式调用 Skill 的写法为 `$skill-name`；若当前客户端提供斜杠命令，则可用 `/skill-name`。具体前缀由客户端界面决定。
 
-`setup-engineering-workflow` 是每个仓库手动执行一次的初始化 Skill。`wayfinder` 用于大型、跨模块、跨多个 session 且决策路线不清的工程规划。需求发现和需求澄清分别由 `workflow-discovery` 和 `workflow-grill-with-docs` 负责。它们与本插件的其他 Skill 一样，均需显式调用。
+`setup-engineering-workflow` 是每个仓库手动执行一次的初始化 Skill。**仅安装 Plugin 不会修改项目文件，也不会产生自动会话入口**；新项目需要显式调用初始化 Skill，检查现有约定并由用户确认文件清单，才能将适配后的会话入口和状态恢复规则写入项目级 Agent instructions。`wayfinder` 用于大型、跨模块、跨多个 session 且决策路线不清的工程规划。需求发现和需求澄清分别由 `workflow-discovery` 和 `workflow-grill-with-docs` 负责。它们与本插件的其他 Skill 一样，均需显式调用。
+
+需求形成 Contract 后，`workflow-to-spec` 按仓库约定与风险产出短 Spec 或完整 Spec：经确认的短 Spec 可直接实施；完整 Spec 则进入设计审查、Ticket 拆分和 readiness 门禁。
 
 ## 安装
 
