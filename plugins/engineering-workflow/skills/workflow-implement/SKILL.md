@@ -1,6 +1,6 @@
 ---
 name: workflow-implement
-description: "用户要求实现已确认的 Spec / Ticket，或边界稳定的小范围改动时，在既有 Contract 内编码、验证、Review 并按项目规则本地提交；不负责澄清或重新设计。"
+description: "用户要求实现已确认的 Spec / Ticket，或边界稳定的小范围改动时，在既有 Contract 内编码、按反馈修复验证失败、Review 并按项目规则本地提交；不负责澄清或重新设计。"
 ---
 
 # 实现任务
@@ -110,9 +110,30 @@ SOLID 不是机械检查表。实现阶段重点使用：
 - 重要架构抽象；
 - 已确认的 `workflow-design-review` 决策。
 
+## 验证失败闭环
+
+- 开始验证前，根据目标仓库的 `AGENTS.md`、Ticket / Contract 和改动边界选择适用的 Software Test、Integration Test、AI Evaluation、Business Acceptance、静态检查或 Real E2E。按实际风险运行，不机械套用全量验证。
+- 验证失败后阅读完整失败信息，判断它来自实现回归、Contract / 测试预期冲突、测试自身问题、环境依赖或不稳定结果；依据证据定位原因，在已确认 Scope 内修复，不删除或放宽能揭示真实问题的断言来换取通过。
+- 修复后重跑失败的检查及受影响的回归检查；再按项目门禁完成其余必需验证。行为代码再改动后，重新判断并运行受影响的验证。
+- 不重复运行未变化且没有新诊断价值的命令。若失败揭示目标、Contract、权限 / 状态不变量或架构决定不清，暂停相关实现并返回对应设计 / 澄清阶段，不自行猜定。
+- 外部依赖、凭据、服务或运行环境导致检查无法完成时，记录具体阻塞和影响，并继续运行仍可执行且有价值的独立检查。只有所有适用必需检查通过，或存在清晰且无法解除的阻塞，才能报告任务终态；逐项区分通过、失败、未运行和阻塞。
+
 ## 完成门禁
 
-运行与变更直接相关的 targeted tests，必要时运行相关完整确定性测试、`compileall`、`uv lock --check` 或项目已有静态检查。随后在当前上下文执行一次 `workflow-code-review`，检查 Acceptance Criteria、范围、测试证据、测试是否验证公共行为 / 状态且没有复杂测试逻辑或过度指定 Interaction、实际触及的安全 / Domain / Architecture 边界、依赖方向、职责集中度、最小充分实现和 Secret。不得调用独立 Agent 或重复无关全仓库审查。
+验证闭环满足终态条件后，在当前上下文执行一次 `workflow-code-review`，检查 Acceptance Criteria、范围、测试证据、测试是否验证公共行为 / 状态且没有复杂测试逻辑或过度指定 Interaction、实际触及的安全 / Domain / Architecture 边界、依赖方向、职责集中度、最小充分实现和 Secret。不得调用独立 Agent 或重复无关全仓库审查。
+
+## 任务后的 Harness 反馈
+
+完成具体任务后，检查执行证据是否暴露可复用的工程缺口。只有以下情况才提出 Harness 改进建议：同类问题重复出现，或单次证据已清楚表明存在结构性缺口。普通实现缺陷、一次性环境故障、没有证据的偏好，以及已有 Ticket / 规则正在处理的缺口，不应重复包装成新建议。
+
+每条建议说明：
+
+- 主要缺口类别：上下文、事实源、工具、测试、反馈、架构约束、可观测性之一；
+- 任务中的具体证据；若以重复为依据，说明重复表现；
+- 建议沉淀到的确切位置与机制（例如 `AGENTS.md`、领域 / Contract 文档、test、lint、CI、Skill、script 或 observability）；
+- 预期如何减少同类缺口复发，或让后续任务更容易定位和验证。
+
+缺少足够证据时明确写“未观察到符合门槛的 Harness 缺口”。提出建议不等于获得扩大当前 Scope 的授权：若建议需要修改本 Ticket / Spec 未包含的 Harness、Skill、Contract 或规则，先向用户报告证据与最小建议，等待用户决定是否另行实施；不得在任务内自行改写持久规则。
 
 确认以下内容后，才允许创建本地 Commit：
 
@@ -127,9 +148,10 @@ Commit 使用项目规定的 `<type>(<scope>): <中文摘要>`，不在本 Skill
 ```text
 Mode: Main Agent
 Status: PASS | BLOCKED
-Tests: <定向和相关完整验证>
+Verification: <逐项列出命令 / 证据及通过、失败、未运行或阻塞状态>
 Review: PASS | NEED FIX
 Clean Code: PASS | NEED FIX
 Commit: <hash> <message> | None
+Harness Feedback: <类别、证据、建议位置 / 机制和预期效果 | 未观察到符合门槛的缺口>
 Remaining: <剩余问题>
 ```

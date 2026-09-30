@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Engineering Workflow",
     "shortDescription": "Repository setup, workflow routing, planning, implementation, and delivery",
-    "longDescription": "A complete software engineering workflow plugin. It initializes repository-specific workflow conventions on manual request, routes stages through ask-matt, supports manual Wayfinder planning for large multi-module work across sessions, and covers clarification, Specs, design review, Tickets, TDD, implementation, code review, delivery, and post-merge cleanup.",
+    "longDescription": "A complete software engineering workflow plugin. It initializes repository-specific workflow conventions on manual request, offers optional next-stage navigation through ask-matt, separates discovery from clarification, supports manual Wayfinder planning for large multi-module work across sessions, and covers Specs, design review, Tickets, TDD, implementation, code review, delivery, and post-merge cleanup.",
     "developerName": "Local Workflow Maintainer",
     "category": "Developer Tools",
     "capabilities": [

@@ -1,0 +1,5 @@
+interface:
+  display_name: "需求发现"
+  short_description: "从问题和机会中探索值得追求的结果"
+policy:
+  allow_implicit_invocation: false
