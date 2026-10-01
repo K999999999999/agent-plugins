@@ -24,4 +24,4 @@ Ticket 的媒介和保存位置以目标仓库为准：可以是本地 Markdown�
 
 先展示草案，不写正式 Ticket。每条草案包含 Title、Change Profile、Owner、Blocked by、What to build、Acceptance Criteria、owned files、验证证据、Migration / Rollback（如适用）和 Done When。草案生成后必须由当前主 Agent 执行 `workflow-ticket-readiness`，结果为 `READY` 后再请求用户确认粒度和依赖。
 
-用户确认后，按目标仓库规定写入或同步正式 Ticket。正式 Ticket 至少能追溯 What to build、Blocked by、Status、Owner、Acceptance criteria、Result、Comments 和验证证据；迁移或大范围变更还要能追溯切片、失败处理和防止 Backsliding 的状态。写入后不要自动实现，等待用户选择具体 Ticket。
+用户确认拆分后，按目标仓库规定写入或同步正式 Ticket。正式 Ticket 至少能追溯 What to build、Blocked by、Status、Owner、Acceptance criteria、Result、Comments 和验证证据；迁移或大范围变更还要能追溯切片、失败处理和防止 Backsliding 的状态。Ticket 拆分确认与整体实施授权分别判断：用户已授权整个目标时，从第一个可实施 Ticket 开始按依赖连续推进，不要求用户逐项选择；没有整体授权时，先一次确认实施范围。Ticket 拆分本身不授权 Push、PR 或 Merge。主 Agent 可按目标仓库流程在当前上下文调用下一阶段 Skill，不要求用户手动重新启动。

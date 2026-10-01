@@ -2,4 +2,4 @@ interface:
   display_name: "PR 交付"
   short_description: "执行 candidate、PR、Auto-merge 和安全清理门禁"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
