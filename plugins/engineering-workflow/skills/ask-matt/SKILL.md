@@ -9,7 +9,7 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 路由前读取目标仓库适用的 `AGENTS.md`、`CLAUDE.md`、相关 `docs/agents/`、项目上下文文档、工作记录和 Git 状态，再依据仓库规则判断阶段。首先区分：用户尚无候选目标时是 `需求发现`；已有候选目标但重要行为、范围、边界或验收不清时是 `需求澄清`。
 
-本 Skill 是 router（路由器），不是隐式状态机。它可以路由到本包的阶段 Skill 或独立专项 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。每次只推荐一个最合适的下一步，给出明确 Skill 调用和简短原因后立即停止；不自动调用 Skill、不执行工作流，也不推进阶段。用户必须自行显式启动被推荐 Skill。
+本 Skill 是可选 router（路由器），不是新会话或工程任务的必经入口。它可以路由到本包的阶段 Skill 或独立专项 Skill，但不能替代目标仓库的规则、测试、CI 或用户确认提供的硬门禁。用户主动要求导航时，每次只推荐一个最合适的下一步，给出明确 Skill 调用和简短原因后立即停止；它本身不执行工作流。其他阶段 Skill 可由当前主 Agent 按任务上下文调用，用户不必逐阶段手动触发。调用方式不会跳过 Spec、实施范围、关键方案、Ticket 拆分或发布授权门禁。
 
 ## 先判断变更形状
 
@@ -39,13 +39,13 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
   → workflow-grill-with-docs（需求澄清）
 目标结果和范围足够明确
   → workflow-to-spec（按目标仓库规则形成短 / 完整 Spec）
-  → 用户确认 Spec
-       ├─ 短 Spec / 单会话小改动 → workflow-implement
-       └─ 完整 Spec / 多阶段工作
+  → 用户确认（完整 Spec 必须确认；短 Spec 按目标仓库授权规则判断是否需要）
+       ├─ 短 Spec / 单会话小改动 → 已明确授权则 workflow-implement；否则一次确认
+       └─ 完整 Spec / 多阶段工作（用户确认后）
             → workflow-design-review（编码前只读审查）
             → workflow-to-tickets（拆分纵向 Ticket）
             → workflow-ticket-readiness（检查 Ticket 是否可实施）
-            → 用户确认 Ticket 拆分
+            → 用户确认 Ticket 拆分；整体实施授权已覆盖时按依赖连续执行全部 Ticket，不逐项等待选择
             → workflow-implement
   → workflow-tdd（行为变化时）
   → 确定性测试
@@ -66,7 +66,7 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 ### 3. 需求清楚但没有行为 Contract
 
-使用 `$workflow-to-spec`。由目标仓库规则和变更规模决定短 Spec 或完整 Spec。短 Spec 至少写明目标、预期结果、验收方式和验证方式；用户确认后，小范围、单会话且不改变稳定 Contract 的工作可直接进入 `$workflow-implement`。完整 Spec 面向多阶段工作，确认后继续设计审查和 Ticket 流程。Spec 的保存位置、格式和命名以目标仓库规则为准；如果仓库没有规定，先提出最小约定，不把某个项目的路径假设带入其他仓库。Spec 未经用户确认不能作为实现授权。
+使用 `$workflow-to-spec`。由目标仓库规则和变更规模决定短 Spec 或完整 Spec。短 Spec 至少写明目标、预期结果、验收方式和验证方式；范围稳定且目标仓库认可用户明确任务作为授权时，记录该依据后可直接实施，不重复确认短 Spec，否则一次确认。完整 Spec 面向多阶段工作，须先由用户确认，再继续设计审查和 Ticket 流程。Spec 的保存位置、格式和命名以目标仓库规则为准；如果仓库没有规定，先提出最小约定，不把某个项目的路径假设带入其他仓库。
 
 ### 4. Spec 已确认但未审查
 
@@ -74,11 +74,11 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 ### 5. 需要拆分实现任务
 
-使用 `$workflow-to-tickets`。它先展示 Ticket 草案，不在用户确认前写入正式 Ticket。草案必须经过 `$workflow-ticket-readiness` 的 `READY` 检查，并遵循目标仓库对本地记录或外部 tracker 的规定。
+使用 `$workflow-to-tickets`。它先展示 Ticket 草案，不在用户确认前写入正式 Ticket。草案必须经过 `$workflow-ticket-readiness` 的 `READY` 检查，并遵循目标仓库对本地记录或外部 tracker 的规定。确认拆分后，如果用户已授权完成整个目标，Agent 按依赖连续实施全部 Ticket；没有整体授权时一次确认具体实施范围，不逐 Ticket 询问是否继续。
 
 ### 6. Ticket 已确认
 
-使用 `$workflow-implement`。读取 Ticket、Spec、相关 Contract 和仓库规则；行为变化执行 TDD，运行 targeted tests，在当前上下文完成轻量 `$workflow-code-review`，通过后只创建本地 Commit。
+使用 `$workflow-implement`。读取 Ticket、Spec、相关 Contract 和仓库规则；行为变化执行 TDD，运行 targeted tests，在当前上下文完成 `$workflow-code-review`，通过后按项目规则创建本地 Commit。完整目标已获授权时跨 Ticket 连续推进；实现 Review 不是额外的用户 PR Review。
 
 ### 7. 需要直接补测试或审查已有变更
 
@@ -118,10 +118,11 @@ description: "用户明确要求判断工程任务所处阶段或推荐下一步
 
 ## 不可跳过的授权边界
 
-- 用户确认 Spec 不等于实现授权。
+- 完整 Spec 确认和 Ticket 拆分确认不是实施授权；一次整体授权可以覆盖按依赖完成整个目标，无需逐 Ticket 再授权。
+- 发布授权独立于实施授权。发布前说明目标、提交范围、风险、验证证据和目标仓库的自动合并行为；明确授权后，同一目标 / 范围内的 PR 更新、CI 修复、复盘和安全清理不重复询问。
 - 用户确认 Ticket 不等于 Push、PR 或 Merge 授权。
-- 形成 candidate 后必须先向用户说明目标、Commit 范围、风险、缺失验证和后续外部动作。
-- 只有用户明确确认后，才能进行最终验收、Push 和创建或更新 PR。
+- candidate 形成后，先在聊天说明目标、Commit 范围、风险、验证证据和后续外部动作，再取得发布授权。
+- 只有用户明确授权后，才能 Push 或创建 / 更新 PR。
 - Agent 不直接执行 Merge；遵循目标仓库的自动化和分支保护规则，并验证真实 PR 状态。
 - PR 已合并且清理条件全部满足后，才回到默认分支、同步合并结果并清理本次 Feature branch / worktree。
 

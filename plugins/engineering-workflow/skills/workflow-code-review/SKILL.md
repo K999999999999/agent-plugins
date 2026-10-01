@@ -7,6 +7,8 @@ description: "代码或配置已有待审 Diff，且需要判断它是否满足 
 
 以 Ticket / Spec、BASE_SHA 和 owned files 为审查边界，只读取理解本次变更所需的内容，不扫描无关历史问题，不创建或等待独立 Agent，也不重复已通过的测试。
 
+这是当前主 Agent 执行的本地实现 Review，不是额外的用户 PR Review 门禁。`PASS` 后可在其他 Contract、验证和交付条件满足时继续；`NEED FIX` 时修复本 Ticket 范围内问题并复验，触及用户未确认的决定时返回澄清 / 设计阶段。
+
 ## 检查顺序
 
 1. Acceptance Criteria、Contract、输入输出、错误、状态和不变量；

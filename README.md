@@ -33,9 +33,11 @@
 - `resolving-merge-conflicts`：Merge / Rebase 冲突处理
 - `wizard`：需要用户本人操作的交互式本地向导
 
-## 调用方式：Explicit Skill Invocation
+## 调用方式：阶段 Skill 与手动入口
 
-本仓库的 22 个 Skill 全部采用显式调用（manual-only）：普通自然语言请求不会自动启动其中任何 Skill。知道当前要做什么时，直接调用对应 Skill；尚无候选目标时可调用 `/workflow-discovery` 探索，已有候选目标但重要歧义未解时可调用 `/workflow-grill-with-docs` 澄清。只有主动询问当前阶段或下一步时，才调用 `/ask-matt` 获取建议。目标仓库的 `AGENTS.md` 可以独立驱动新会话状态检查与播报，这不等于自动调用本插件 Skill。
+当前 22 个 Skill 中，`engineering-workflow` 的十个阶段 Skill 均允许按任务上下文隐式调用：`workflow-discovery`、`workflow-grill-with-docs`、`workflow-to-spec`、`workflow-design-review`、`workflow-to-tickets`、`workflow-ticket-readiness`、`workflow-tdd`、`workflow-implement`、`workflow-code-review`、`workflow-delivery`。用户不必逐阶段启动 Skill，但调用策略只决定能否加载能力，不跳过用户确认、实施授权或发布授权。目标仓库的 `AGENTS.md` 仍负责项目事实源和阶段门禁。
+
+`ask-matt`、`setup-engineering-workflow`、`wayfinder` 和全部九个 `agent-engineering-skills` 保持手动调用。普通自然语言问答不会启动工程工作流；只有请求确实进入某个工程阶段时，主 Agent 才调用相应 Skill。仅探索或整理 Spec 的请求不会因此扩展成实现。
 
 `ask-matt` 只在用户主动请求导航时判断阶段、推荐一个明确的 Skill 名称并简述原因，然后停止。它不会自动调用被推荐的 Skill；用户需要自行显式启动下一步。
 
@@ -55,7 +57,7 @@ Review 当前已经实现完成的代码
 研究 LangGraph checkpoint 的官方实现方式
 ```
 
-Codex 文档中的显式调用示例使用 `$skill-name`；若当前客户端将 Skill 暴露为斜杠命令，可使用 `/skill-name`。两种写法指向同一 Skill，具体前缀取决于客户端界面。调用策略以每个 Skill 的 `agents/openai.yaml` 中 `policy.allow_implicit_invocation` 为准，均须为 `false`。
+Codex 文档中的显式调用示例使用 `$skill-name`；若当前客户端将 Skill 暴露为斜杠命令，可使用 `/skill-name`。两种写法指向同一 Skill，具体前缀取决于客户端界面。实际策略以每个 Skill 的 `agents/openai.yaml` 中 `policy.allow_implicit_invocation` 为准；应为允许按阶段隐式调用的十个 Skill 设为 `true`，其余维持 `false`。
 
 ## 目录
 

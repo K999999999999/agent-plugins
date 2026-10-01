@@ -13,7 +13,7 @@ description: "编码前已有已确认的 Spec 或实现设计，需要判断方
 
 - `ask-matt` 负责判断是否需要本阶段；本 Skill 不重新做需求访谈。
 - 只审查已确认且范围唯一的 Spec 或实现设计；目标不清、事实源缺失或用户尚未确认时输出 `BLOCKED`。
-- 通过后进入 `workflow-to-tickets` 或已确认的下一阶段；`PASS` 不等于获得实现、Commit、Push 或 PR 授权。
+- `PASS` 后进入 `workflow-to-tickets` 或已确认的下一阶段。`PASS WITH MINOR FIXES` 时，主 Agent 在继续之前逐项落实并核对修订；修订若改变用户已确认的目标、范围或关键决定，先取得新确认。`PASS` 不等于获得实现、Commit、Push 或 PR 授权。
 - 如果实现过程中必须改变 Module Boundary、公共 Contract、Dependency Direction、重要架构抽象或已确认的 Design Review 决策，`workflow-implement` 必须返回本 Skill 重新审查。
 
 ## Architecture Knowledge Core 的按需读取
@@ -61,7 +61,7 @@ description: "编码前已有已确认的 Spec 或实现设计，需要判断方
 
 ## Verdict
 
-只允许：`PASS`、`PASS WITH MINOR FIXES`、`NEED FIX`、`BLOCKED`。`PASS` 仍不等于实现授权；`NEED FIX` 或 `BLOCKED` 必须返回 Spec / 设计阶段。
+只允许：`PASS`、`PASS WITH MINOR FIXES`、`NEED FIX`、`BLOCKED`。`PASS` 仍不等于实现授权；`PASS WITH MINOR FIXES` 的修订核对完成前不得进入后续阶段；`NEED FIX` 或 `BLOCKED` 必须返回 Spec / 设计阶段。后续 Skill 可由主 Agent 按目标和已确认授权在当前上下文调用，不要求用户手动逐阶段启动。
 
 每个发现必须按以下结构给出，不能只有模式名称或抽象偏好：
 

@@ -2,4 +2,4 @@ interface:
   display_name: "Ticket Readiness"
   short_description: "只读检查 Ticket 是否足以安全实施"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
