@@ -28,7 +28,7 @@
 - `domain-modeling`：领域术语、上下文和 ADR
 - `improve-codebase-architecture`：架构摩擦和 Deep Module 改进候选
 - `maintainability-refactor`：最小范围的可维护性重构
-- `project-audit`：只读、证据驱动的项目体检、全面或专项审计与交付就绪判断
+- `project-audit`：单一全面审计，全仓资产覆盖、全量人工源码审查、跨模块分析、实际验证与交付就绪判断
 - `prototype`：逻辑、状态模型、数据形状和 UI 原型验证
 - `research`：一手资料研究和本地证据记录
 - `resolving-merge-conflicts`：Merge / Rebase 冲突处理
@@ -45,7 +45,7 @@
 示例：
 
 ```text
-$project-audit full
+$project-audit
 全面审计当前项目，评估功能完整性、工程风险与交付就绪状态
 
 /diagnosing-bugs
