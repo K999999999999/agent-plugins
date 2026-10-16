@@ -1,0 +1,5 @@
+interface:
+  display_name: "AI 软件工程流程与质量门禁审计"
+  short_description: "基于真实证据审计 AI 开发流程、质量门禁可信度及自动合并就绪状态"
+policy:
+  allow_implicit_invocation: false
