@@ -26,7 +26,7 @@
 - `codebase-design`：Module、Interface、Seam 和 Adapter 设计
 - `diagnosing-bugs`：Bug、失败和性能回归诊断
 - `domain-modeling`：领域术语、上下文和 ADR
-- `engineering-process-audit`：AI 软件工程流程与质量门禁审计；单一全面只读模式，评估持续生成、验证与合并代码的机制及自动合并就绪状态
+- `harness-audit`：Harness Engineering 全面只读审计，评估任务生命周期、文档同步、工具与质量门禁、维护反馈及自动合并就绪状态
 - `improve-codebase-architecture`：架构摩擦和 Deep Module 改进候选
 - `maintainability-refactor`：最小范围的可维护性重构
 - `project-audit`：单一全面审计，全仓资产覆盖、全量人工源码审查、跨模块分析、实际验证与交付就绪判断
@@ -46,7 +46,7 @@
 示例：
 
 ```text
-$engineering-process-audit
+$harness-audit
 
 $project-audit
 全面审计当前项目，评估功能完整性、工程风险与交付就绪状态
@@ -64,7 +64,9 @@ Review 当前已经实现完成的代码
 研究 LangGraph checkpoint 的官方实现方式
 ```
 
-`$engineering-process-audit` 无须参数，自动审计当前 Git 仓库；详细检查项和报告规则见 [Skill 入口](plugins/agent-engineering-skills/skills/engineering-process-audit/SKILL.md)。它检查工程流程与门禁机制，`project-audit` 检查代码和项目产物的实际质量；前者只读诊断，不自动实施改造，也不调整 CI 或自动合并设置。
+`$harness-audit` 无须参数，全面审计当前 Git 仓库；详细检查项和报告规则见 [Skill 入口](plugins/agent-engineering-skills/skills/harness-audit/SKILL.md)。它检查支撑 AI 工程任务的 Harness，`project-audit` 检查代码和项目产物的实际质量。审计报告区分已完善、需最小补强和可合并 / 移除的机制，并列明建议修改的文件及理由；审计本身只读，不自动实施改造，也不调整 CI 或自动合并设置。
+
+`harness-audit` 由 `engineering-process-audit` 更名而来，仅保留一个全面审计入口。通用 Skill 提供检查方法；具体事实源、状态约定、命令和授权规则继续由目标项目维护。
 
 Codex 文档中的显式调用示例使用 `$skill-name`；若当前客户端将 Skill 暴露为斜杠命令，可使用 `/skill-name`。两种写法指向同一 Skill，具体前缀取决于客户端界面。实际策略以每个 Skill 的 `agents/openai.yaml` 中 `policy.allow_implicit_invocation` 为准；应为允许按阶段隐式调用的十个 Skill 设为 `true`，其余维持 `false`。
 
