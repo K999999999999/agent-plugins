@@ -32,3 +32,7 @@ Red 必须因目标 Contract 尚未实现而失败，不能是导入、路径或
 - 测试代码应完整、简洁、易读，不把复杂循环、条件逻辑和隐藏数据生成放入测试；允许测试使用少量 DAMP（Descriptive And Meaningful Phrases）重复换取清晰度；
 - 失败信息应说明预期、实际结果和关键上下文；测试失败必须能支持快速定位；
 - Flaky Test 不能被静默跳过；必须分类、记录 Owner、修复或显式隔离，并保留回收条件和未覆盖风险。
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。

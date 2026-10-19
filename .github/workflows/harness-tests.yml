@@ -1,0 +1,31 @@
+name: Harness tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  standard-library-tests:
+    name: Harness standard-library tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv without cache
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          version: "0.12.2"
+          enable-cache: false
+
+      - name: Install Python 3.11
+        run: uv python install 3.11
+
+      - name: Run Harness tests without a project environment or network services
+        run: uv run --no-project --python 3.11 python -m unittest discover -s tests -v

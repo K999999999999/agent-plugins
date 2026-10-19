@@ -70,3 +70,7 @@ Agent 不直接执行 Merge。若 CI 失败、PR 未合并、分支依赖不明�
 只有 PR 明确为 `MERGED`，且没有用户修改、未推送 Commit、Open / Stacked PR 或其他 worktree 依赖时，才执行目标仓库规定的收尾：同步默认分支、删除本次 PR 对应的唯一 Feature branch / worktree、按项目策略清理远端 branch，并再次验证 branch、HEAD、tracking、Git status、worktree 和远端状态。将合并结果、Review / CI 证据、清理结果和仍未解决的问题记录到正式工作项及本机状态，并在聊天完整报告。
 
 保留项目规定的 backup 分支，不批量清理历史分支；归属、合并状态或依赖不明确时暂停，不删除。
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。
