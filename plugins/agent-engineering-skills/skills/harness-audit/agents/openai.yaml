@@ -1,0 +1,5 @@
+interface:
+  display_name: "Harness Engineering Audit"
+  short_description: "全面只读审计 AI 工程任务生命周期、文档同步、质量门禁及 Harness 改进闭环"
+policy:
+  allow_implicit_invocation: false

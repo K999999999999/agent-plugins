@@ -1,0 +1,5 @@
+interface:
+  display_name: "项目全面审计"
+  short_description: "基于仓库与运行证据评估功能、架构、维护风险及项目交付就绪状态"
+policy:
+  allow_implicit_invocation: false
