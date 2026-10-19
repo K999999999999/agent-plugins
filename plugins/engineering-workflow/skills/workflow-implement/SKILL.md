@@ -155,3 +155,7 @@ Commit: <hash> <message> | None
 Harness Feedback: <类别、证据、建议位置 / 机制和预期效果 | 未观察到符合门槛的缺口>
 Remaining: <剩余问题>
 ```
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。

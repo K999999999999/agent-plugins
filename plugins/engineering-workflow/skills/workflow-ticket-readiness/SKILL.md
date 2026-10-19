@@ -45,3 +45,7 @@ Next: <用户确认拆分，或返回 workflow-to-spec / workflow-design-review>
 ```
 
 发现未决 Contract 或架构决定时必须 `NEED FIX`，不能在 Ticket 或代码中猜测。
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。

@@ -24,7 +24,7 @@ C:\Users\Administrator\.codex\workflows\engineering-workflow\plugins\engineering
 
 初始的专项能力包从 12 个 Skill 调整为当前 9 个：保留独立能力，迁入 2 个 Workflow Skill，并移除 1 个不符合当前使用场景的 Skill。
 
-迁移时保留了规范的 `.codex-plugin/plugin.json`、Plugin README 和全部 Skill；来源目录下旧的顶层 `plugin.json` 是重复的简化清单，没有复制。
+迁移时保留了规范的 `.codex-plugin/plugin.json`、Plugin README 和全部 Skill；来源目录下旧的顶层 `plugin.json` 是重复的简化清单，没有复制。迁移记录中的 12 个 Skill 是历史数量；当前 `engineering-workflow` 目录有 13 个 Skill，包含 `workflow-discovery`。此处迁移记录不代表当前安装版本或会话加载状态。
 
 迁移时活动来源与本机已安装缓存逐文件一致；此后本仓库独立演进，当前不能据此推断它仍与来源或缓存相同。
 

@@ -81,3 +81,7 @@ Reference: <是否读取 Architecture Knowledge Core，以及读取了哪些相�
 Evidence Sources: <实际读取的事实源和验证计划>
 Next: <workflow-to-tickets 或返回 Spec / Design Review>
 ```
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。

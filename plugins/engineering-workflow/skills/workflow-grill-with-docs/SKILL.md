@@ -58,3 +58,7 @@ description: "工程需求仍有可能改变目标、行为、范围、关键边
 留给 Ticket / 实施阶段的决定: <不改变 Contract 的局部选择；没有则写 None>
 下一步: <根据目标仓库规则选择下一阶段；若原任务要求继续且授权已覆盖，主 Agent 可在当前上下文调用相应 Skill；若用户只要求讨论或仍缺少决定，清楚说明并停在此处>
 ```
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。

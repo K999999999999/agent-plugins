@@ -51,3 +51,7 @@ description: "需求已澄清且仓库事实已核实，需要固化为行为 Sp
 ## 交接门禁
 
 写入后检查事实、术语、范围、Contract、测试边界和待确认项，并报告 Spec 路径。完整 Spec 必须由用户确认后才进入 `workflow-design-review`；创建或更新完整 Spec 本身不代表用户接受关键决定。短 Spec 按目标仓库授权规则处理：用户已给出稳定且完整的实施指令时不重复确认；否则先取得一次确认。用户意图只是整理 Spec 时，报告后停止；用户要求完成目标且授权已覆盖时，主 Agent 可在当前上下文继续调用下一阶段 Skill。不得因可隐式调用而绕过必要决定或授权。此 Skill 不创建外部 Issue、PR、Commit 或业务代码。
+
+## Harness 工具协作
+
+当目标仓库已有 Harness adapter 和当前工作项时，按统一的 [Harness 工具协作规则](../../references/harness-integration.md) 使用适用的状态、Diff、诊断、阶段转换、收尾或接入命令。本 Skill 的阶段边界和目标仓库规则仍然优先。
