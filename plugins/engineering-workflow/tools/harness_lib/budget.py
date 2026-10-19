@@ -547,7 +547,9 @@ def diagnostic_report(root, adapter_arg, work_item: str, problem_id: str | None 
                       *, now: datetime | None = None) -> dict:
     from .diff import build_diff_report
 
-    git_root, _, adapter, _, _, parsed = _load_target(root, adapter_arg, work_item)
+    git_root, _, adapter, _, _, parsed = _load_target(
+        root, adapter_arg, work_item, allow_cancelled=True
+    )
     extension = parsed["extension"]
     diagnostics = extension.get("diagnostics", _empty_diagnostics()) if extension else _empty_diagnostics()
     current = _now(now)

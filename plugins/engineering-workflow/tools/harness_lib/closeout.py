@@ -274,9 +274,36 @@ def check_closeout(root, adapter_arg, work_item: str) -> dict:
     from .budget import summaries as budget_summaries
     from .diff import build_diff_report
 
-    git_root, records_root, adapter, _, _, parsed = _load_target(root, adapter_arg, work_item)
+    git_root, records_root, adapter, _, _, parsed = _load_target(
+        root, adapter_arg, work_item, allow_cancelled=True
+    )
     extension = parsed["extension"] or {}
     report = build_diff_report(git_root, adapter, work_item, extension or None)
+    if parsed["fields"].get("Status") == "cancelled":
+        return {
+            "repository": adapter["repository"], "work_item_id": work_item,
+            "manifest": {"configured": adapter.get("dynamic_file_manifest") is not None},
+            "candidate": {
+                "fingerprint": report["candidate"]["candidate_fingerprint"],
+                "report_sha256": report["report_sha256"],
+                "complete": report["completeness"]["complete"],
+                "counts": report["counts"],
+            },
+            "dynamic_files": [], "tickets": [], "child_work_items": [],
+            "diagnostic_budgets": [], "active_diagnostics": [],
+            "validation_evidence_current": False, "code_review_evidence_current": False,
+            "manifest_changed_in_candidate": False,
+            "manifest_review_evidence_current": False,
+            "maintenance_followups_open": [], "maintenance_followups_needing_recheck": [],
+            "closeout_applicable": False, "closeout_disposition": "cancelled",
+            "cancellation": extension["cancellation"],
+            "local_ready": False, "local_reasons": ["work_item_cancelled"],
+            "local_completion_valid": False, "delivery_required": None,
+            "delivery_status": "cancelled", "missing_remote_evidence": [],
+            "overall_ready": False, "overall_completion_valid": False,
+            "closeout_sha256": None,
+            "current_lifecycle_status": "cancelled", "lifecycle_claim_valid": True,
+        }
     try:
         manifest, manifest_sha, manifest_path = _read_manifest(git_root, adapter)
     except HarnessError as exc:
