@@ -47,6 +47,7 @@ Codex 文档中显式调用 Skill 的写法为 `$skill-name`；若当前客户�
 ```bash
 python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> state --work-item <id> --json
 python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> migrate --work-item <id> --expected-sha <record-sha256>
+python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> cancel --work-item <id> --reason '<why work stops>' --confirmed-by '<user confirmation source>' --expected-sha <record-sha256>
 python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> capture-baseline --work-item <id> --scope task --expected-sha <record-sha256>
 python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> capture-baseline --work-item <id> --scope slice --expected-sha <record-sha256>
 python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> diff --work-item <id> --json
@@ -68,7 +69,7 @@ python3 <engineering-workflow-plugin>/tools/harness.py --project-root <repo> dia
 
 候选验证或聊天审批通过 `attest-evidence` 关联当前 `candidate_fingerprint`，可同时绑定 `report_sha256` 和外部输入身份。附带 `git_snapshot` 的远端检查快照必须与本地仓库、HEAD、base ref / SHA 相同，且本地 index、工作树和未跟踪文件干净；工具核对的是身份，不验证远端来源或检查结论，依据仍按声明处理。快照身份摘要随证据保存，之后明确显示“需要复核”。记录继续显示实施范围授权与候选批准两项独立事实；任何 HEAD、base、index、工作树、分类规则或报告变化都会使相应旧依据过期。该命令只接受人工声明或未验证依据；它不能伪造 `machine-verified`。Candidate transition 只有在 adapter 显式设置 `candidate_required` 时，才要求提交绑定当前指纹的必需证据。
 
-当前 Markdown 状态记录的既有顶层字段仍是其事实源；新运行数据写入单个版本化扩展块。旧记录只读识别，`migrate` 必须带读取到的完整 SHA-256，并在原子更新前按原摘要保留一份备份。转换需要最新摘要、adapter 明确允许的阶段边，以及带来源、核实人、仓库、主题、覆盖、采集时间和核实方式的 JSON 依据。`unverified` 依据不能满足必需项；CLI 自述不能标成 `machine-verified`，只有实际采集器执行核验后才能生成此类依据。每次写入使用工作项锁和同目录原子替换；摘要冲突、锁已存在、格式未知或转换非法均非零退出且不覆盖记录。遗留锁不会自动删除，需人工核实其归属及原记录后处理。
+当前 Markdown 状态记录的既有顶层字段仍是其事实源；新运行数据写入单个版本化扩展块。旧记录只读识别，`migrate` 必须带读取到的完整 SHA-256，并在原子更新前按原摘要保留一份备份。`cancel` 只取消已迁移、非终态且 `PRs: None` 的工作项；必须提供记录 SHA、停止原因和确认来源，保留当前 Stage，并写入结构化取消依据。`confirmed_by` 是调用者提供的来源声明，工具不验证用户身份。`cancelled` 表示明确停止，不表示交付完成；不会要求 `done` 的整体收尾证据，也不能再通过 Harness 写命令变更。命令不删除分支 / worktree、不关闭 PR、不级联修改 Ticket 或关联工作项。普通阶段转换仍需要 adapter 明确允许的阶段边，以及带来源、核实人、仓库、主题、覆盖、采集时间和核实方式的 JSON 依据。`unverified` 依据不能满足必需项；CLI 自述不能标成 `machine-verified`，只有实际采集器执行核验后才能生成此类依据。每次写入使用工作项锁和同目录原子替换；摘要冲突、锁已存在、格式未知或转换非法均非零退出且不覆盖记录。遗留锁不会自动删除，需人工核实其归属及原记录后处理。
 
 运行状态与项目生命周期阶段分开保存，可表达 `running`、`waiting-tool`、`waiting-ci`、`waiting-user`、`blocked`、`paused`、`idle` 和 `unknown`。工具只校验经过它的状态转换；它不阻止通过其他 Shell / Git 命令绕行，也不提供后台监控或进程强制停止。
 

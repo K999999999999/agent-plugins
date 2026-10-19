@@ -12,6 +12,7 @@ from harness_lib.state import (
     HarnessError,
     attest_evidence,
     capture_baseline_record,
+    cancel_work_item,
     get_diff,
     get_state,
     migrate_record,
@@ -59,6 +60,13 @@ def parser() -> argparse.ArgumentParser:
     migrate = commands.add_parser("migrate", help="explicitly enable the v1 state extension")
     migrate.add_argument("--work-item", required=True)
     migrate.add_argument("--expected-sha", required=True)
+
+    cancel = commands.add_parser("cancel", help="explicitly cancel a work item without claiming delivery")
+    cancel.add_argument("--work-item", required=True)
+    cancel.add_argument("--reason", required=True)
+    cancel.add_argument("--confirmed-by", required=True,
+                        help="the confirmation source; this is a recorded caller claim")
+    cancel.add_argument("--expected-sha", required=True)
 
     transition = commands.add_parser("transition", help="move to an allowed workflow stage")
     transition.add_argument("--work-item", required=True)
@@ -211,10 +219,14 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"下一步: {state['next'] or '未记录'}")
                 print(f"当前候选: {state['candidate']['candidate_fingerprint']}")
                 print(f"Diff完整: {'是' if state['diff_completeness']['complete'] else '否'}")
-                print(
-                    f"本地收尾: {'可完成' if state['closeout'].get('local_ready') else '未完成'}；"
-                    f"总体收尾: {'可完成' if state['closeout'].get('overall_ready') else '未完成'}"
-                )
+                if state["lifecycle_status"] == "cancelled":
+                    cancellation = state["cancellation"]
+                    print(f"收尾: 不适用；工作项已取消：{cancellation['reason']}")
+                else:
+                    print(
+                        f"本地收尾: {'可完成' if state['closeout'].get('local_ready') else '未完成'}；"
+                        f"总体收尾: {'可完成' if state['closeout'].get('overall_ready') else '未完成'}"
+                    )
                 if not state["closeout"].get("lifecycle_claim_valid", True):
                     print("错误: 当前 Status: done 缺少与当前候选相容的总体收尾证据。")
                 if state["evidence_summary"]:
@@ -263,6 +275,11 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "migrate":
             result = migrate_record(
                 args.project_root, args.adapter, args.work_item, args.expected_sha
+            )
+        elif args.command == "cancel":
+            result = cancel_work_item(
+                args.project_root, args.adapter, args.work_item, args.reason,
+                args.confirmed_by, args.expected_sha,
             )
         elif args.command == "transition":
             result = transition_stage(

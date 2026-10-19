@@ -66,11 +66,14 @@ class HarnessPluginIntegrationTests(unittest.TestCase):
         self.assertEqual(len(action_refs), 2)
         self.assertNotIn("secrets.", workflow)
 
-    def test_cli_exposes_state_diff_diagnostics_closeout_maintenance_and_onboarding(self) -> None:
+    def test_cli_exposes_lifecycle_and_harness_commands(self) -> None:
         result = subprocess.run(
             [sys.executable, str(CLI), "--help"], check=True, capture_output=True, text=True,
         )
-        for command in ("state", "diff", "diagnostic", "closeout", "maintenance", "onboard"):
+        for command in (
+            "state", "diff", "migrate", "cancel", "diagnostic", "closeout",
+            "maintenance", "onboard",
+        ):
             self.assertIn(command, result.stdout)
 
 

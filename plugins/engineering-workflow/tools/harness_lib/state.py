@@ -36,7 +36,7 @@ TOP_LEVEL_FACTS = {
 EXTENSION_KEYS = {
     "schema_version", "revision", "runtime_status", "runtime_reason",
     "evidence", "transition_history", "migration", "task_baseline", "slice_baseline", "diagnostics",
-    "closeout", "maintenance",
+    "closeout", "maintenance", "cancellation",
 }
 BASELINE_KEYS = {
     "schema_version", "repository", "work_item_id", "branch", "head_sha", "base_ref",
@@ -176,6 +176,22 @@ def _validate_timestamp(value: object, label: str) -> None:
         raise HarnessError(f"{label} 时间必须含时区")
 
 
+def _cancellation_text(value: object, label: str) -> str:
+    if not isinstance(value, str):
+        raise HarnessError(f"{label} 必须是非空安全摘要")
+    result = value.strip()
+    if (
+        not result or len(result) > 4000
+        or any(ord(char) < 32 or ord(char) == 127 for char in result)
+        or re.search(
+            r"(?i)(?:token|password|secret|credential|api[_-]?key)\s*[:=]\s*\S+|\bbearer\s+\S+",
+            result,
+        )
+    ):
+        raise HarnessError(f"{label} 必须是非空安全摘要，不能包含控制字符或凭据")
+    return result
+
+
 def _validate_git_snapshot(value: object, repository: str) -> dict:
     keys = {"repository", "head_sha", "base_ref", "base_sha", "captured_at"}
     if not isinstance(value, dict) or set(value) != keys:
@@ -270,6 +286,22 @@ def _validate_extension(extension: object, adapter: dict) -> dict:
         from .maintenance import validate_maintenance
 
         validate_maintenance(extension["maintenance"])
+    if "cancellation" in extension:
+        cancellation = extension["cancellation"]
+        if (
+            not isinstance(cancellation, dict)
+            or set(cancellation) != {
+                "from_status", "stage", "reason", "confirmed_by", "cancelled_at"
+            }
+            or not isinstance(cancellation.get("from_status"), str)
+            or cancellation["from_status"] not in {"open", "in-progress", "blocked"}
+            or not isinstance(cancellation.get("stage"), str)
+            or cancellation["stage"] not in adapter["workflow"]["stages"]
+        ):
+            raise HarnessError("状态扩展 cancellation 格式无效")
+        _cancellation_text(cancellation["reason"], "取消原因")
+        _cancellation_text(cancellation["confirmed_by"], "取消确认来源")
+        _validate_timestamp(cancellation.get("cancelled_at"), "工作项取消")
     stages = adapter["workflow"]["stages"]
     for event in extension["transition_history"]:
         if (
@@ -422,11 +454,18 @@ def _parse_record(raw: bytes, adapter: dict, work_item: str) -> dict:
         for key in ("task_baseline", "slice_baseline"):
             if key in extension and extension[key]["work_item_id"] != work_item:
                 raise HarnessError(f"状态扩展 {key} 归属其他工作项")
-    if fields.get("Status") not in {"open", "in-progress", "blocked", "done"}:
+    status = fields.get("Status")
+    if status not in {"open", "in-progress", "blocked", "done", "cancelled"}:
         raise HarnessError("未知或缺失的工作项生命周期状态")
     stage = fields.get("Stage")
     if stage not in adapter["workflow"]["stages"]:
         raise HarnessError("状态记录包含未知或缺失的阶段")
+    cancellation = extension.get("cancellation") if extension else None
+    if status == "cancelled":
+        if not cancellation or cancellation["stage"] != stage:
+            raise HarnessError("cancelled 工作项缺少与当前阶段匹配的取消依据")
+    elif cancellation is not None:
+        raise HarnessError("非 cancelled 工作项不能包含 cancellation 依据")
     return {
         "text": text, "fields": fields, "field_lines": field_lines,
         "stage": stage, "extension": extension,
@@ -470,7 +509,9 @@ def _sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
-def _load_target(root: Path, adapter_arg: Path | None, work_item: str):
+def _load_target(
+    root: Path, adapter_arg: Path | None, work_item: str, *, allow_cancelled: bool = False
+):
     configured = _project(root, adapter_arg)
     if configured is None:
         raise HarnessError("项目未接入 Harness adapter")
@@ -478,6 +519,8 @@ def _load_target(root: Path, adapter_arg: Path | None, work_item: str):
     path = _work_item_path(records_root, work_item)
     raw = path.read_bytes()
     parsed = _parse_record(raw, adapter, work_item)
+    if parsed["fields"].get("Status") == "cancelled" and not allow_cancelled:
+        raise HarnessError("工作项已 cancelled；不能再执行状态写入命令")
     return git_root, records_root, adapter, path, raw, parsed
 
 
@@ -553,6 +596,7 @@ def get_state(root: Path, adapter_arg: Path | None, work_item: str | None) -> di
         "repository": adapter["repository"],
         "work_item_id": work_item,
         "lifecycle_status": fields["Status"],
+        "cancellation": extension.get("cancellation") if extension else None,
         "stage": parsed["stage"],
         "runtime_status": extension.get("runtime_status", "unknown") if extension else "unknown",
         "runtime_reason": extension.get("runtime_reason", "") if extension else "",
@@ -840,8 +884,58 @@ def capture_baseline_record(
 def get_diff(root: Path, adapter_arg: Path | None, work_item: str) -> dict:
     from .diff import build_diff_report
 
-    git_root, _, adapter, _, _, parsed = _load_target(root, adapter_arg, work_item)
+    git_root, _, adapter, _, _, parsed = _load_target(
+        root, adapter_arg, work_item, allow_cancelled=True
+    )
     return build_diff_report(git_root, adapter, work_item, parsed["extension"])
+
+
+def cancel_work_item(
+    root: Path, adapter_arg: Path | None, work_item: str, reason: str,
+    confirmed_by: str, expected_sha: str,
+) -> dict:
+    _, _, _, path, raw, parsed = _load_target(
+        root, adapter_arg, work_item, allow_cancelled=True
+    )
+    _check_expected(raw, expected_sha)
+    fields = parsed["fields"]
+    extension = parsed["extension"]
+    if extension is None:
+        raise HarnessError("旧格式记录只读；请先显式执行 migrate")
+    if fields["Status"] in {"done", "cancelled"}:
+        raise HarnessError(f"不能取消终态工作项：{fields['Status']}")
+    if fields.get("PRs") != "None":
+        raise HarnessError("取消前必须先核实并处理 PR；当前记录必须是 PRs: None")
+    for required in ("Next", "Last stop", "Last updated"):
+        if required not in parsed["field_lines"]:
+            raise HarnessError(f"取消需要状态记录包含 {required} 字段")
+    reason = _cancellation_text(reason, "取消原因")
+    confirmed_by = _cancellation_text(confirmed_by, "取消确认来源")
+    updated = dict(extension)
+    updated["revision"] += 1
+    updated["cancellation"] = {
+        "from_status": fields["Status"],
+        "stage": parsed["stage"],
+        "reason": reason,
+        "confirmed_by": confirmed_by,
+        "cancelled_at": _timestamp(),
+    }
+    updates = {
+        "Status": "cancelled",
+        "Last stop": f"User cancelled: {reason}",
+        "Next": "None",
+        "Last updated": _timestamp(),
+    }
+    if "Blocker" in parsed["field_lines"]:
+        updates["Blocker"] = "None"
+    content = _render(parsed["text"], parsed, updated, updates=updates)
+    new_hash = _replace_under_lock(path, raw, content, expected_sha)
+    return {
+        "work_item_id": work_item,
+        "status": "cancelled",
+        "stage": parsed["stage"],
+        "record_sha256": new_hash,
+    }
 
 
 def attest_evidence(

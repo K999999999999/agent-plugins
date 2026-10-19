@@ -62,6 +62,7 @@ class HarnessProject:
             "Status: in-progress\n"
             f"Stage: {stage}\n"
             "Last updated: 2026-10-19T13:00:00+08:00\n"
+            "Last stop: ready to exercise the Harness CLI\n"
             "Implementation authorization: local implementation only\n"
             "Publication authorization: None\n"
             "Owner: test\n"
@@ -187,6 +188,124 @@ class HarnessStateTests(unittest.TestCase):
         self.assertEqual(state["next"], "复核当前候选与验证范围")
         self.assertEqual(state["revision"], 1)
         self.assertEqual(len(state["transition_history"]), 1)
+
+    def test_explicit_cancel_preserves_stage_records_reason_and_skips_delivery_closeout(self) -> None:
+        self.project.record.write_text(
+            self.project.record.read_text(encoding="utf-8").replace(
+                "Last stop:", "PRs: None\nLast stop:"
+            ),
+            encoding="utf-8",
+        )
+        original = self.project.record.read_bytes()
+        self.project.migrate()
+        result = self.project.run(
+            "cancel",
+            "--reason",
+            "User decided not to pursue this work item",
+            "--confirmed-by",
+            "User confirmation in the current session",
+            "--expected-sha",
+            digest(self.project.record),
+        )
+        self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "cancelled")
+        self.assertEqual(payload["stage"], "实施中")
+
+        state_result = self.project.run("state", "--json")
+        self.assertEqual(state_result.returncode, 0, state_result.stderr)
+        state = json.loads(state_result.stdout)
+        self.assertEqual(state["lifecycle_status"], "cancelled")
+        self.assertEqual(state["stage"], "实施中")
+        self.assertEqual(state["next"], "None")
+        self.assertEqual(state["cancellation"]["reason"], "User decided not to pursue this work item")
+        self.assertTrue(state["closeout"]["lifecycle_claim_valid"])
+        self.assertFalse(state["closeout"]["closeout_applicable"])
+        self.assertEqual(state["closeout"]["delivery_status"], "cancelled")
+        backup = self.project.record.with_name(
+            f"status.md.pre-harness-{hashlib.sha256(original).hexdigest()}.bak"
+        )
+        self.assertEqual(backup.read_bytes(), original)
+
+    def test_cancel_requires_migration_and_no_pr_then_terminal_state_rejects_writes(self) -> None:
+        original = self.project.record.read_bytes()
+        legacy_cancel = self.project.run(
+            "cancel", "--reason", "stop", "--confirmed-by", "user",
+            "--expected-sha", digest(self.project.record),
+        )
+        self.assertNotEqual(legacy_cancel.returncode, 0)
+        self.assertIn("先显式执行 migrate", legacy_cancel.stderr)
+        self.assertEqual(self.project.record.read_bytes(), original)
+
+        self.project.record.write_text(
+            self.project.record.read_text(encoding="utf-8").replace(
+                "Last stop:", "PRs: None\nLast stop:"
+            ),
+            encoding="utf-8",
+        )
+        self.project.migrate()
+        self.project.record.write_text(
+            self.project.record.read_text(encoding="utf-8").replace("PRs: None", "PRs: #42"),
+            encoding="utf-8",
+        )
+        outstanding_pr = self.project.run(
+            "cancel", "--reason", "stop", "--confirmed-by", "user",
+            "--expected-sha", digest(self.project.record),
+        )
+        self.assertNotEqual(outstanding_pr.returncode, 0)
+        self.assertIn("PRs: None", outstanding_pr.stderr)
+        self.project.record.write_text(
+            self.project.record.read_text(encoding="utf-8").replace("PRs: #42", "PRs: None"),
+            encoding="utf-8",
+        )
+
+        cancelled = self.project.run(
+            "cancel", "--reason", "stop", "--confirmed-by", "user",
+            "--expected-sha", digest(self.project.record),
+        )
+        self.assertEqual(cancelled.returncode, 0, cancelled.stderr or cancelled.stdout)
+        cancelled_bytes = self.project.record.read_bytes()
+        repeated_cancel = self.project.run(
+            "cancel", "--reason", "again", "--confirmed-by", "user",
+            "--expected-sha", digest(self.project.record),
+        )
+        self.assertNotEqual(repeated_cancel.returncode, 0)
+        self.assertIn("不能取消终态", repeated_cancel.stderr)
+        runtime_write = self.project.run(
+            "set-runtime", "--status", "idle", "--reason", "should be rejected",
+            "--expected-sha", digest(self.project.record),
+        )
+        self.assertNotEqual(runtime_write.returncode, 0)
+        self.assertIn("已 cancelled", runtime_write.stderr)
+        self.assertEqual(self.project.record.read_bytes(), cancelled_bytes)
+
+    def test_cancelled_status_requires_matching_structured_cancellation(self) -> None:
+        self.project.migrate()
+        text = self.project.record.read_text(encoding="utf-8").replace(
+            "Status: in-progress", "Status: cancelled"
+        )
+        self.project.record.write_text(text, encoding="utf-8")
+        result = self.project.run("state", "--json")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("缺少与当前阶段匹配的取消依据", result.stderr)
+
+    def test_cancel_rejects_field_injection_and_secret_like_reason_without_writing(self) -> None:
+        self.project.record.write_text(
+            self.project.record.read_text(encoding="utf-8").replace(
+                "Last stop:", "PRs: None\nLast stop:"
+            ),
+            encoding="utf-8",
+        )
+        self.project.migrate()
+        original = self.project.record.read_bytes()
+        for reason in ("stop\nStatus: done", "token=example-secret"):
+            rejected = self.project.run(
+                "cancel", "--reason", reason, "--confirmed-by", "user",
+                "--expected-sha", digest(self.project.record),
+            )
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("安全摘要", rejected.stderr)
+            self.assertEqual(self.project.record.read_bytes(), original)
 
     def test_rejected_transition_stale_digest_and_existing_lock_leave_original_unchanged(self) -> None:
         self.project.migrate()
